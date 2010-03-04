@@ -95,19 +95,34 @@
 
 \section*{Introduction}
 
+\begin{frame}{Administration}
+  \begin{itemize}
+  \item Contact me if you feel lost: \url{weibelt@ethz.ch}
+  \item Get the slides:
+    \url{http://n.ethz.ch/~weibelt/download/parprog/}
+  \item Homework is optional, everybody gets a ``testat''
+  \item Past experience: students who do the homework have a good
+    chance to pass the exam
+  \end{itemize}
+
+  \vspace{\stretch{1}}
+
+  \begin{center}
+    \includegraphics[scale=0.6]{figures/java} \\
+    \tiny{Source: \url{http://www.asiamex.com}}
+  \end{center}
+\end{frame}
+
 \begin{frame}{Executive Summary}
   \begin{itemize}
-  \item Solution to last week's assignment
+  \item Solution to the last assignment
   \item Exceptions in Java
     \begin{itemize}
     \item Quick overview
     \item Quiz
     \end{itemize}
-  \item Hints for next week's assignment
-  \item Get the slides:
-    \url{http://n.ethz.ch/~weibelt/download/parprog/}
+  \item Hints for the next assignment
   \end{itemize}
-
 
   \vspace{\stretch{1}}
 
@@ -150,7 +165,7 @@ class AlternativeSolution {
     /* iterate through the argument vector */
     for (String arg : args) {		
       System.out.println(
-      Integer.parseInt(args[i]) + 1
+      Integer.parseInt(arg) + 1
       );
     }
   } 		
@@ -220,6 +235,7 @@ class AlternativeSolution {
     // statements to always execute
   }
   \end{lstlisting}
+  Alternative: Announce a throw in the enclosing method (see later)
 \end{frame}
 
 \begin{frame}[fragile]{Catching an Exception}

@@ -1,0 +1,157 @@
+%==============================================================================
+% presentation.tex
+%==============================================================================
+
+
+%==============================================================================
+% Configuration
+%==============================================================================
+
+% Internationalisation
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+% \usepackage[ngerman]{babel}
+
+% Different packages
+\usepackage{url}
+\usepackage{color,listings,paralist}
+\usepackage{enumerate}
+\usepackage{tabularx}
+\usepackage{alltt}
+
+% Use default Acrobat reader fonts
+\usepackage{mathpazo}
+
+% Use CM fonts (increases document size)
+\usepackage{ae}
+
+% Use images
+\usepackage{graphicx}
+
+% Configure beamer
+\usetheme[secheader]{Ikhono}
+\usefonttheme[onlylarge]{structurebold}
+\setbeamertemplate{navigation symbols}{}
+
+% Variables
+\providecommand{\Title}{Parallel Programming}
+\providecommand{\Subtitle}{Recitation Session 2}
+\providecommand{\Author}{Thomas Weibel <weibelt@ethz.ch>}
+\providecommand{\Institute}{Laboratory for Software Technology, \\
+  Swiss Federal Institute of Technology Z\"urich}
+\providecommand{\Date}{\today}
+
+% PDF settings
+\hypersetup{
+  pdftitle={\Title, \Subtitle},
+  pdfauthor={\Author},
+  pdfsubject={\Institute},
+  pdfkeywords={parallel programming} 
+}
+
+% Titlepage
+\title{\Title}
+\subtitle{\Subtitle}
+\author{\Author}
+\institute{\Institute}
+\date{\Date}
+
+% Listings
+\lstdefinestyle{Default}{
+  language=Java,
+  tabsize=2,
+  mathescape=true,
+  inputencoding=utf8,
+  showstringspaces=false,
+  fontadjust=true,
+  basicstyle=\ttfamily,
+  keywordstyle=\color{blue}\bfseries,
+}
+\lstset{style=Default}
+
+
+%==============================================================================
+% Document
+%==============================================================================
+
+\begin{document}
+
+
+% Titlepage
+\begin{frame}[plain]
+  \titlepage
+\end{frame}
+
+\note{
+}
+
+
+\section*{Introduction}
+
+\begin{frame}{Executive Summary}
+  \begin{itemize}
+  \item TODO
+  \end{itemize}
+\end{frame}
+
+
+\section{Last Assignment}
+
+\begin{frame}{Outline}
+  \tableofcontents[current]
+\end{frame}
+
+\begin{frame}{Solution}
+  \begin{itemize}
+  \item TODO
+  \end{itemize}
+\end{frame}
+
+
+\section{Foobar}
+
+\begin{frame}{Outline}
+  \tableofcontents[current]
+\end{frame}
+
+\begin{frame}{Foobar}
+  \begin{itemize}
+  \item TODO
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Code}
+  \begin{lstlisting}
+class HelloWorld {
+
+  public static void main(String[] args) {
+    System.out.println("Hello, World!");
+  }
+
+}
+  \end{lstlisting}
+\end{frame}
+
+
+\section{New Assignment}
+
+\begin{frame}{Outline}
+  \tableofcontents[current]
+\end{frame}
+
+\begin{frame}{Foobar}
+  \begin{itemize}
+  \item TODO
+  \end{itemize}
+\end{frame}
+
+
+\section*{Outro}
+
+\begin{frame}{Summary}
+  \begin{itemize}
+  \item TODO
+  \end{itemize}
+\end{frame}
+
+\end{document}

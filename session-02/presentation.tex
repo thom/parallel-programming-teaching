@@ -174,7 +174,8 @@ class Incrementer {
 
   \begin{lstlisting}
   int i = 41;
-  System.out.println(++i);    
+  System.out.println(++i);
+  System.out.println(i);
   \end{lstlisting}
 
   \vspace{\stretch{1}}
@@ -184,13 +185,14 @@ class Incrementer {
   \vspace{\stretch{1}}
 
   \begin{lstlisting}
-  int i = 23;
-  System.out.println(i++);    
+  int j = 23;
+  System.out.println(j++);
+  System.out.println(j);
   \end{lstlisting}
 
   \vspace{\stretch{1}}
 
-  Output? Value of \lstinline!i!?
+  Output?
 \end{frame}
 
 \begin{frame}[fragile]{Conditional Operator (Ternary Operator)}
@@ -226,8 +228,9 @@ class Incrementer {
 \end{frame}
 
 \begin{frame}{Creating Threads}
-  An application that creates an instance of Thread must provide the
-  code that will run in that thread. There are two ways to do this:
+  An application that creates an instance of \lstinline!Thread! must
+  provide the code that will run in that thread. There are two ways to
+  do this:
 
   \vspace{\stretch{1}}
 
@@ -264,7 +267,8 @@ public class HelloRunnable
 
 \begin{frame}[fragile]{Subclass Thread}
   \begin{itemize}
-  \item The \lstinline!Thread! class itself implements Runnable
+  \item The \lstinline!Thread! class itself implements
+    \lstinline!Runnable!
   \item Its \lstinline!run! method does nothing
   \item Application can subclass \lstinline!Thread!, providing its own
     implementation of \lstinline!run!
@@ -405,7 +409,8 @@ public class Buffer {
       time
     \item What happens if both bow at the same time?
     \end{itemize}
-  \item Analyze: ``Ctrl+\textbackslash" (Unix), ``Ctrl+Break'' (Windows)
+  \item Analyze deadlocks: ``Ctrl+\textbackslash" (Unix),
+    ``Ctrl+Break'' (Windows)
   \end{itemize}
 \end{frame}
 
@@ -543,7 +548,7 @@ public class Buffer {
   \item A consumer thread reads a value from the shared buffer and
     uses it
   \item Premise: Every value must be consumed exactly once
-  \item Question: How to synchronize those two
+  \item Question: How to synchronize those two?
   \end{itemize}
 \end{frame}
 

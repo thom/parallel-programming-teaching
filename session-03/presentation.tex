@@ -89,8 +89,6 @@
   \begin{itemize}
   \item Java Questions?
     \begin{itemize}
-    \item Too much Java?
-    \item Too little Java?
     \item Please send me an email if you want me to discuss something
       specific in the recitation session
     \end{itemize}
@@ -295,7 +293,7 @@ m = 0;
 while (j++ < 10) {
   if (m++ == j) {
     System.out.print("j=" + j + 
-                     "m=" + m + "\n");
+                     " m=" + m + "\n");
   }
 }
   \end{lstlisting}
@@ -354,19 +352,19 @@ while (j < 10) {
 
   \begin{exampleblock}{Algorithm}
     \begin{itemize}
-    \item Divide l into two sublists of size $n/2$
-    \item Sort each sublist recursively by re-applying MergeSort
+    \item Divide l into two sub-lists of size $n/2$
+    \item Sort each sub-list recursively by re-applying MergeSort
       \begin{itemize}
-      \item End of recursion: Size of the sublist becomes 1
-      \item If size of a sublist $> 1$ $\Rightarrow$ other sorting
+      \item End of recursion: Size of the sub-list becomes 1
+      \item If size of a sub-list $> 1$ $\Rightarrow$ other sorting
         needed
       \end{itemize}
-    \item Merge the two sublists back into one sorted list
+    \item Merge the two sub-lists back into one sorted list
     \end{itemize}
   \end{exampleblock}
 \end{frame}
 
-\begin{frame}{Example: Divide into sublists}
+\begin{frame}{Example: Divide into sub-lists}
   \includegraphics[width=\textwidth]{figures/mergesort-divide}  
 \end{frame}
 
@@ -386,7 +384,7 @@ while (j < 10) {
   \begin{center}
     \begin{tabular}{c|c|l}
       List 1 & List 2 & Merged list \\\hline
-      \alert{$0$}, $5$ & $3$, $4$, $45$ & $0 < 3$ $\rightarrow$ insert $0$ in merged list: \alert{$0$} \\
+      \alert{$0$}, $5$ & \alert{$3$}, $4$, $45$ & $0 < 3$ $\rightarrow$ insert $0$ in merged list: \alert{$0$} \\
       $0$, \alert{$5$} & \alert{$3$}, $4$, $45$ & $3 < 5$ $\rightarrow$ insert $3$ in merged list: $0$, \alert{$3$} \\
       $0$, \alert{$5$} & $3$, \alert{$4$}, $45$ & $4 < 5$ $\rightarrow$ insert $4$ in merged list: $0$, $3$, \alert{$4$} \\
       $0$, \alert{$5$} & $3$, $4$, \alert{$45$} & $5 < 45$ $\rightarrow$ insert $5$ in merged list: $0$, $3$, $4$, \alert{$5$} \\
@@ -395,7 +393,7 @@ while (j < 10) {
   \end{center}  
 \end{frame}
 
-\begin{frame}{Example: Merging sorted sublists}
+\begin{frame}{Example: Merging sorted sub-lists}
   \includegraphics[width=\textwidth]{figures/mergesort-merge}  
 \end{frame}
 
@@ -433,7 +431,7 @@ while (j < 10) {
   \begin{block}{Synchronization issues}
     Limitations in parallelization?
 
-    $\hookrightarrow$ Merge can only happen if two sublists are sorted
+    $\hookrightarrow$ Merge can only happen if two sub-lists are sorted
   \end{block}
 
   \vspace{\stretch{1}}

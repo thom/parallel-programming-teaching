@@ -102,20 +102,6 @@
   \tableofcontents[current]
 \end{frame}
 
-\begin{frame}{Questions}
-  \begin{itemize}
-  \item Is the parallel version faster?
-  \item How many threads give the best performance?
-  \item What is the influence of the CPU model/CPU frequency?
-  \end{itemize}
-
-  \vspace{\stretch{1}}
-
-  \begin{center}
-    \includegraphics[scale=0.35]{figures/dilbert-1}
-  \end{center}
-\end{frame}
-
 \begin{frame}[fragile]{Parallel MergeSort}
 \begin{lstlisting}
 void mergesort (int start, int end) {
@@ -218,6 +204,20 @@ long time = stop - start;
   \item \lstinline!-Xmx<size>!: set maximum Java heap size (eg. to
     \lstinline!2048M!)
   \end{itemize}
+\end{frame}
+
+\begin{frame}{Questions}
+  \begin{itemize}
+  \item Is the parallel version faster?
+  \item How many threads give the best performance?
+  \item What is the influence of the CPU model/CPU frequency?
+  \end{itemize}
+
+  \vspace{\stretch{1}}
+
+  \begin{center}
+    \includegraphics[scale=0.35]{figures/dilbert-1}
+  \end{center}
 \end{frame}
 
 \subsection*{Results}

@@ -87,7 +87,8 @@
 
 \begin{frame}{Executive Summary}
   \begin{itemize}
-  \item TODO
+  \item Data partitioning with parallel matrix multiplication
+  \item How to manage threads
   \end{itemize}
 \end{frame}
 
@@ -98,7 +99,50 @@
   \tableofcontents[current]
 \end{frame}
 
-\begin{frame}[fragile]{Error in Last Week's Slides}
+\begin{frame}{Parallel Matrix Multiplication}
+  \begin{block}{Data partitioning based on}
+    \begin{itemize}
+    \item Output matrix $\mathbf{C}$
+    \item Input matrix $\mathbf{A}$ and input matrix $\mathbf{B}$
+    \end{itemize}
+  \end{block}
+
+  \vspace{\stretch{1}}
+  
+  \begin{center}
+    \includegraphics[scale=0.4]{figures/xkcd-matrix} \\
+    \tiny{Source: \url{http://www.xkcd.com}}
+  \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Output Partitioning (2 Threads)}
+  \begin{columns}[c]
+    \begin{column}{0.75\textwidth}
+\begin{lstlisting}[basicstyle=\fontsize{11}{13}\selectfont\ttfamily]
+// Thread 0
+for (i=0; i<N/2; i++) {
+  for (j=0; j<N; j++) {
+    for (k=0; k<N; k++) {
+      c[i][j] += a[i][k] * b[k][j];
+    }
+  }
+}
+// Thread 1
+for (i=N/2; i<N; i++) {
+  for (j=0; j<N; j++) {
+    for (k=0; k<N; k++) {
+      c[i][j] += a[i][k] * b[k][j];
+    }
+  }
+}
+\end{lstlisting}
+    \end{column}
+    \begin{column}{0.25\textwidth}
+    \end{column}
+  \end{columns}  
+\end{frame}
+
+\begin{frame}[fragile]{Input Partitioning: Error in Last Week's Slides}
   \begin{columns}[c]
     \begin{column}{0.75\textwidth}
 \begin{lstlisting}[basicstyle=\fontsize{11}{13}\selectfont\ttfamily]
@@ -123,29 +167,34 @@ for (i=0; i<N; i++) {
     \begin{column}{0.25\textwidth}
       \pause
 
-      \alert{Error:} Each thread is only summing up half the column
-      and half the row.
+      \alert{Error:} Possible race condition when writing
+      \lstinline!c[i][j]!
     \end{column}
   \end{columns}
 \end{frame}
 
-\begin{frame}[fragile]{Correction}
+\begin{frame}[fragile]{Input Partitioning: Locking}
   \begin{columns}[c]
     \begin{column}{0.75\textwidth}
-\begin{lstlisting}[basicstyle=\fontsize{11}{13}\selectfont\ttfamily]
+\begin{lstlisting}[basicstyle=\fontsize{8}{10}\selectfont\ttfamily]
+Object[][] lock; // Lock "matrix"
 // Thread 0
-for (i=0; i<N/2-1; i++) {
+for (i=0; i<N; i++) {
   for (j=0; j<N; j++) {
-    for (k=0; k<N; k++) {
-      c[i][j] += a[i][k] * b[k][j];
+    synchronized(lock[i][j]) {
+      for (k=0; k<N/2; k++) {
+        c[i][j] += a[i][k] * b[k][j];
+      }
     }
   }
 }
 // Thread 1
-for (i=N/2; i<N; i++) {
+for (i=0; i<N; i++) {
   for (j=0; j<N; j++) {
-    for (k=0; k<N; k++) {
-      c[i][j] += a[i][k] * b[k][j];
+    synchronized(lock[i][j]) {
+      for (k=N/2; k<N; k++) {
+        c[i][j] += a[i][k] * b[k][j];
+      }
     }
   }
 }
@@ -156,10 +205,47 @@ for (i=N/2; i<N; i++) {
   \end{columns}
 \end{frame}
 
-\begin{frame}{Solution}
+\begin{frame}{Overhead?}
   \begin{itemize}
-  \item TODO
+  \item A complete row is locked
+  \item Actual lock contention will be moderate to low
+  \item In practice the slow-down -- with respect to output
+    partitioning -- is moderate (only a few percent)
   \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Input Partitioning: Fine-Grain Locking}
+  \begin{columns}[c]
+    \begin{column}{0.6\textwidth}
+\begin{lstlisting}[basicstyle=\fontsize{8}{10}\selectfont\ttfamily]
+Object[][] lock; // Lock "matrix"
+// Thread 0
+for (i=0; i<N; i++) {
+  for (j=0; j<N; j++) {
+    for (k=0; k<N/2; k++) {
+      synchronized(lock[i][j]) {
+        c[i][j] += a[i][k] * b[k][j];
+      }
+    }
+  }
+}
+// Thread 1
+for (i=0; i<N; i++) {
+  for (j=0; j<N; j++) {
+    for (k=N/2; k<N; k++) {
+      synchronized(lock[i][j]) {
+        c[i][j] += a[i][k] * b[k][j];
+      }
+    }
+  }
+}
+\end{lstlisting}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \alert{Significant overhead:} About 3 times slower than
+      coarse-grain locking
+    \end{column}
+  \end{columns}  
 \end{frame}
 
 
@@ -345,23 +431,16 @@ class FibTask implements Callable<Integer> {
 \end{frame}
 
 
-\section{New Assignment}
-
-\begin{frame}{Outline}
-  \tableofcontents[current]
-\end{frame}
-
-\begin{frame}{TODO}
-  TODO
-\end{frame}
-
-
 \section*{Outro}
 
 \begin{frame}{Summary}
-  \begin{itemize}
-  \item TODO
-  \end{itemize}
+  \begin{center}
+  \huge{Enjoy your vacation!}    
+
+  \vspace{\stretch{1}}
+  
+  \includegraphics[scale=0.6]{figures/dilbert}
+  \end{center}
 \end{frame}
 
 \end{document}

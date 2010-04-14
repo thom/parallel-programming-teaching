@@ -1,0 +1,91 @@
+class Turn {
+	// 0 : wants to enter exclusive section
+	// 1 : does not want to enter...
+	private volatile int flag = 1;
+
+	void request() { 
+		flag = 0;
+	}
+
+	void free() { 
+		flag = 1; 
+	}
+	
+	int read() { 
+		return flag; 
+	}
+}
+
+
+class Worker implements Runnable {
+	private int myid;
+	private Turn mysignal;
+	private Turn othersignal;
+	
+	Worker(int id, Turn t0, Turn t1) {
+		myid = id;
+		mysignal = t0;
+		othersignal = t1;
+	}
+
+	public void run() {
+		while (true) {
+			mysignal.request();
+			while (true) {
+				if (othersignal.read() == 1) 
+					break;
+			}
+
+			// critical section
+
+			mysignal.free();
+		}
+	}
+}
+
+
+class Master {
+	public static void main(String[] args) {
+		Turn gate0 = new Turn();
+		Turn gate1 = new Turn();
+		Thread t1 = new Thread(new Worker(0,gate0, gate1));
+		Thread t2 = new Thread(new Worker(1,gate1, gate0));
+		t1.start();
+		t2.start();
+	}
+}
+
+
+Proof:
+======
+
+Worker 0:
+
+public void run() {
+	while (true) {
+A1:
+A2: 		s0.request();
+A3:		while (true) {
+			if (s1.read() == 1) 
+				break;
+		}
+A4:		// critical section
+A5:		s0.free();
+	}
+}
+
+
+Worker 1:
+
+public void run() {
+	while (true) {
+B1:
+B2:		s1.request();
+B3:		while (true) {
+			if (s0.read() == 1) 
+				break;
+		}
+B4:		// critical section
+B5:		s1.free();
+	}
+}

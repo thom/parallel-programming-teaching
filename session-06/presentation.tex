@@ -218,6 +218,13 @@ B4:     signal.turn = 0;
   \item You should prove this property in a manner that’s similar to
     the proof given in class.
   \end{itemize}
+
+  \vspace{\stretch{1}}
+  
+  \begin{center}
+    \includegraphics[scale=1.5]{figures/induction} \\
+    \tiny{Source: \url{http://brownsharpie.courtneygibbons.org/?p=1146}}
+  \end{center}
 \end{frame}
 
 \begin{frame}{Some thoughts on how to proceed}
@@ -240,15 +247,15 @@ B4:     signal.turn = 0;
 
   We use the notation ``\lstinline!at(S)!'' to indicate that execution
   is ``at statement (location) \lstinline!S!'' $\Rightarrow$ all
-  previous statements have executed \lstinline!S! has not yet started
-  to execute
+  previous statements have executed while \lstinline!S! has not yet
+  started to execute
 \end{frame}
 
 \begin{frame}{Proof strategy}
   \begin{itemize}
   \item Proof by induction on the execution sequence.
   \item Base case: does (1) hold at the start of the execution of the
-    program (threads at \lstinline!A1! and \lstinline!B1!)
+    program (threads at \lstinline!A1! and \lstinline!B1!)?
  \item Induction step: Assume that (1) holds. Will execution of an
    additional step invalidate (1)?
   \end{itemize}
@@ -262,8 +269,8 @@ B4:     signal.turn = 0;
     $\Rightarrow$ do not care about signal
   \item \lstinline!at(A3)!: condition (1) is \lstinline!true!
     $\Rightarrow$ \lstinline!turn == 0!, follows from the fact that
-    \lstinline!turn!  was \lstinline!0! \lstinline!at(A2) AND! the
-    transition from \lstinline!A2! $\Rightarrow$ \lstinline!A3! did
+    \lstinline!turn!  was \lstinline!0! \lstinline!at(A2)! and the
+    transition from \lstinline!A2! $\rightarrow$ \lstinline!A3! did
     not change value of \lstinline!turn!
   \item \lstinline!at(A4)!: condition (1) is \lstinline!false!
     $\Rightarrow$ do not care about \lstinline!turn!
@@ -546,8 +553,20 @@ B5:     s1.free();
 
 \begin{frame}{Summary}
   \begin{itemize}
-  \item TODO
+  \item Mutual exclusion
+  \item Volatile in Java
+  \item Proofs for mutual exclusion
+    \begin{itemize}
+    \item Try to solve assignment 6 -- there will be at least one
+      proof at the exam
+    \end{itemize}
   \end{itemize}
+
+  \vspace{\stretch{1}}
+  
+  \begin{center}
+    \includegraphics[scale=0.18]{figures/dilbert}
+  \end{center}
 \end{frame}
 
 \end{document}

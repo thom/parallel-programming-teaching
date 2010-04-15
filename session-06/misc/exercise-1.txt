@@ -5,9 +5,8 @@ public void run() {
 	while (true) {
 A1:		non_critical section
 A2:		while (!(signal.turn == 0)) {}
-A3:			critical_section
-A4:			signal.turn = 1;
-		}
+A3:		critical_section
+A4:		signal.turn = 1;
 	}
 }
 
@@ -17,9 +16,8 @@ public void run() {
 	while (true) {
 B1:		non_critical section
 B2:		while (!(signal.turn == 1)) {}
-B3:			critical_section
-B4:			signal.turn = 0;
-		}
+B3:		critical_section
+B4:		signal.turn = 0;
 	}
 }
 

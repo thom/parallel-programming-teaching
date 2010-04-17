@@ -92,51 +92,93 @@
 \end{frame}
 
 
+\section{Determining when a Thread has finished}
+
+\begin{frame}{Outline}
+  \tableofcontents[current]
+\end{frame}
+
+\begin{frame}[fragile]{\lstinline{isAlive()}}
+\begin{lstlisting}
+// Create and start a thread 
+Thread thread = new MyThread(); 
+thread.start(); 
+
+// Check if the thread has finished 
+// in a non-blocking way 
+if (thread.isAlive()) { 
+  // Thread has not finished 
+} else { 
+  // Finished 
+} 
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{\lstinline{join(delayMillis)}}
+\begin{lstlisting}
+// Wait for the thread to finish but don't 
+// wait longer than a specified time 
+long delayMillis = 5000; // 5 seconds 
+try { 
+  thread.join(delayMillis); 
+  if (thread.isAlive()) { 
+    // Timeout occurred, 
+    // thread has not finished 
+  } else { 
+    // Finished 
+  } 
+} catch (InterruptedException e) { 
+  // Thread was interrupted 
+} 
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{\lstinline{join()}}
+\begin{lstlisting}
+// Wait indefinitely for the thread to finish 
+try { 
+  thread.join(); 
+  // Finished 
+} catch (InterruptedException e) { 
+  // Thread was interrupted 
+} 
+\end{lstlisting}
+\end{frame}
+
+
+\section{Volatile}
+
+\begin{frame}{Outline}
+  \tableofcontents[current]
+\end{frame}
+
+\begin{frame}{TODO}
+  \begin{itemize}
+  \item TODO
+  \end{itemize}
+\end{frame}
+
+
 \section{Last Assignment}
 
 \begin{frame}{Outline}
   \tableofcontents[current]
 \end{frame}
 
-\begin{frame}{Solution}
+\begin{frame}{TODO}
   \begin{itemize}
   \item TODO
   \end{itemize}
 \end{frame}
 
 
-\section{Foobar}
+\section{TODO}
 
 \begin{frame}{Outline}
   \tableofcontents[current]
 \end{frame}
 
-\begin{frame}{Foobar}
-  \begin{itemize}
-  \item TODO
-  \end{itemize}
-\end{frame}
-
-\begin{frame}[fragile]{Code}
-  \begin{lstlisting}
-class HelloWorld {
-
-  public static void main(String[] args) {
-    System.out.println("Hello, World!");
-  }
-
-}
-  \end{lstlisting}
-\end{frame}
-
-
-\section{New Assignment}
-
-\begin{frame}{Outline}
-  \tableofcontents[current]
-\end{frame}
-
-\begin{frame}{Foobar}
+\begin{frame}{TODO}
   \begin{itemize}
   \item TODO
   \end{itemize}

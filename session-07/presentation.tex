@@ -152,10 +152,111 @@ try {
   \tableofcontents[current]
 \end{frame}
 
-\begin{frame}{TODO}
+\begin{frame}{The Volatile Returns}
   \begin{itemize}
-  \item TODO
+  \item Volatile variables are not cached in registers or in
+    caches where they are hidden from other processors
+  \item A read of a volatile variable always returns the most recent
+    write by any thread
   \end{itemize}
+
+  \vspace{\stretch{1}}
+  
+  \begin{center}
+    \includegraphics[width=\textwidth]{figures/the-mummy-returns} \\
+    \tiny{Source: \url{http://thescope.ca/comics/everybodycheerup/the-mummy-returns}}
+  \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Example}
+\begin{lstlisting}[basicstyle=\fontsize{7}{9}\selectfont\ttfamily]
+public class ShutdownDriver {
+  boolean shutdown = false;
+
+  public static void main(String[] args) throws InterruptedException {
+    ShutdownDriver driver = new ShutdownDriver();
+    new BusyTask(driver).start();
+    Thread.sleep(2000);
+    driver.shutdown = true;
+  }
+}
+
+public class BusyTask extends Thread {
+  private ShutdownDriver driver;
+
+  public BusyTask(ShutdownDriver driver) {
+    this.driver = driver;
+  }
+
+  public void run() {
+    while (!driver.shutdown) {}
+    System.out.println("Busy task stopped!");
+  }
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Example: Volatile}
+\begin{lstlisting}[basicstyle=\fontsize{7}{9}\selectfont\ttfamily]
+public class ShutdownDriver {
+  volatile boolean shutdown = false;
+
+  public static void main(String[] args) throws InterruptedException {
+    ShutdownDriver driver = new ShutdownDriver();
+    new BusyTask(driver).start();
+    Thread.sleep(2000);
+    driver.shutdown = true;
+  }
+}
+
+public class BusyTask extends Thread {
+  private ShutdownDriver driver;
+
+  public BusyTask(ShutdownDriver driver) {
+    this.driver = driver;
+  }
+
+  public void run() {
+    while (!driver.shutdown) {}
+    System.out.println("Busy task stopped!");
+  }
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{Synchronization}
+  \begin{block}{Reading}
+    Reading a volatile field is like acquiring a lock: The working
+    memory is invalidated and the volatile field’s current value is
+    reread from memory
+  \end{block}
+
+  \vspace{\stretch{1}}
+
+  \begin{block}{Writing}
+    Writing a volatile field is like releasing a lock: the volatile
+    field is immediately written back to memory
+  \end{block}
+\end{frame}
+
+\begin{frame}{Limitations}
+  \begin{itemize}
+  \item Although reading and writing a volatile field has the same
+    effect on memory consistency as acquiring and releasing a lock,
+    multiple reads and writes are not atomic
+  \item For example, if \lstinline!x! is a volatile variable, the
+    expression \lstinline!x++!  will not necessarily increment
+    \lstinline!x! if concurrent threads can modify \lstinline!x!
+  \item One common usage pattern for volatile variables occurs when a
+    field is read by multiple threads, but only written by one
+  \end{itemize}
+
+  \vspace{\stretch{1}}
+
+  \begin{alertblock}{No Atomicity!}
+    \lstinline!volatile! alone is not strong enough to implement a
+    counter, some form of mutual exclusion is needed as well
+  \end{alertblock}
 \end{frame}
 
 

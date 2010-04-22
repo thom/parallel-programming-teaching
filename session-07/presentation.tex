@@ -87,7 +87,14 @@
 
 \begin{frame}{Executive Summary}
   \begin{itemize}
-  \item TODO
+  \item Determining when a thread has finished
+  \item The Volatile Returns
+  \item Solution to the last assignment
+  \item Semaphores
+  \item Implementing Monitors with Semaphores
+  \item \lstinline!wait()!, \lstinline!notify()!,
+    \lstinline!notifyAll()!
+  \item Hints for assignment 7
   \end{itemize}
 \end{frame}
 
@@ -444,7 +451,8 @@ public synchronized void V() {
 
 \begin{frame}{Comments}
   \begin{itemize}
-  \item You can modify the value of an semphore instance only using the P() and V() operations.
+  \item You can modify the value of an semphore instance only using
+    the \lstinline!P()! and \lstinline!V()! operations.
     \begin{itemize}
     \item Initialize in constructor
     \end{itemize}
@@ -565,21 +573,18 @@ class BoundedBuffer extends Buffer {
     \end{itemize}
   \item One semaphore to line up threads that are waiting for some condition
     \begin{itemize}
-    \item call this the ``condition semaphore'' \lstinline!SCond! --
-      also binary
-    \item threads that wait must do an ``acquire'' and this will not
-      complete
+    \item call this the ``condition semaphore'' \lstinline!SCond!
+    \item binary semaphore
+    \item threads that wait must do an ``acquire''
     \end{itemize}
   \end{itemize}
 
   \vspace{\stretch{1}}
 
-  For  convenience:
-  \begin{itemize}
-  \item Counter \lstinline!waitThread! to count number of waiting
-    threads
-  \item i.e., threads in queue for \lstinline!SCond!
-  \end{itemize}
+  \begin{block}{For convenience}
+    Counter \lstinline!waitThread! to count number of waiting threads
+    i.e., threads in queue for \lstinline!SCond!
+  \end{block}
 \end{frame}
 
 \begin{frame}{Basic idea}
@@ -674,7 +679,7 @@ waitThread--;
 \begin{frame}[fragile]{(2) Translate \lstinline!notifyAll()!}
 \begin{lstlisting}
 if (waitThread > 0) {
-  for (int i=0; i< waitThread; i++) { 
+  for (int i=0; i < waitThread; i++) { 
     SCond.release();
   }
 }	
@@ -706,7 +711,7 @@ if (waitThread > 0) {
 
 \begin{frame}{Note}
   \begin{itemize}
-  \item We wake up only all threads -- they might not be able to enter
+  \item We wake up all threads -- they might not be able to enter
     their critical section if the condition they waited for does not
     hold, but all threads get a chance.
   \item This approach is different from what we discussed in the
@@ -747,7 +752,7 @@ public void insert(Object o)
   }
   doInsert(o);	
   if (waitThread > 0) { 
-    for (int i; i<waitThread; i++) {
+    for (int i; i < waitThread; i++) {
       cond.release(); 
     } 
   }
@@ -772,12 +777,10 @@ public void insert(Object o)
 \begin{frame}{Example}
   \begin{itemize}
   \item \lstinline!I1! -- \lstinline!access.acquire()!
-    \begin{itemize}
-    \item \lstinline!I2! -- \lstinline!access.acquire()!: blocks on
-      access
-    \item \lstinline!I3! -- \lstinline!access.acquire()!: blocks on
-      access
-    \end{itemize}
+  \item \lstinline!I2! -- \lstinline!access.acquire()!: blocks on
+    access
+  \item \lstinline!I3! -- \lstinline!access.acquire()!: blocks on
+    access
   \item \lstinline!I1! -- \lstinline!waitThread == 0!
   \item \lstinline!I1.release!
   \item \lstinline!I2! -- \lstinline!access.acquire()! completes
@@ -820,6 +823,24 @@ public void insert(Object o)
   \tableofcontents[current]
 \end{frame}
 
+\begin{frame}{Read/Write Lock}
+  \begin{itemize}
+  \item Many shared objects have the property that most method calls
+    return information about the object's state without modifying the
+    object ({\bf readers}) while only a small number of calls actually
+    modify the object ({\bf writers})
+  \item There is no need for readers to synchronize with one another
+    \begin{itemize}
+    \item It is perfectly safe for them to access the object
+      concurrently
+    \end{itemize}
+  \item Writers, on the other hand, must lock out readers as well as
+    other writers
+  \item A Read/Write Lock allows multiple readers or a single
+    writer to enter the critical section concurrently
+  \end{itemize}
+\end{frame}
+
 \begin{frame}{Overview}
   \begin{itemize}
   \item Your task is to implement a Read/Write Lock
@@ -845,7 +866,8 @@ public void insert(Object o)
     \end{itemize}
   \item Your implementation must be fair:
     \begin{itemize}
-    \item You may want to use \lstinline!FIFOQueue.java!
+    \item You may want to use \lstinline!FIFOQueue.java! (part of the
+      skeleton)
     \end{itemize}
   \end{itemize}
 \end{frame}
@@ -859,7 +881,8 @@ public void insert(Object o)
     \item Semaphores \\
       (see \url{http://java.sun.com/javase/6/docs/api/})
     \end{itemize}
-  \item Only change class \lstinline!Monitor.java!
+  \item Only change class \lstinline!Monitor.java! (part of the
+    skeleton)
     \begin{itemize}
     \item If you feel it‘s necessary to change other files, please let
       us know
@@ -886,7 +909,11 @@ public void insert(Object o)
 
 \begin{frame}{Summary}
   \begin{itemize}
-  \item TODO
+  \item Different ways to determine if a thread finished
+  \item Volatile
+  \item Semaphores
+  \item Equivalence of Semaphores and Monitors
+  \item Read/Write Lock
   \end{itemize}
 \end{frame}
 

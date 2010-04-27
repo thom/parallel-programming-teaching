@@ -92,51 +92,179 @@
 \end{frame}
 
 
-\section{Last Assignment}
+\section{Read/Write Lock}
 
 \begin{frame}{Outline}
   \tableofcontents[current]
 \end{frame}
 
-\begin{frame}{Solution}
+\begin{frame}{Read/Write Lock}
   \begin{itemize}
-  \item TODO
+  \item Many shared objects have the property that most method calls
+    return information about the object's state without modifying the
+    object ({\bf readers}) while only a small number of calls actually
+    modify the object ({\bf writers})
+  \item There is no need for readers to synchronize with one another
+    \begin{itemize}
+    \item It is perfectly safe for them to access the object
+      concurrently
+    \end{itemize}
+  \item Writers, on the other hand, must lock out readers as well as
+    other writers
+  \item A Read/Write Lock allows multiple readers or a single
+    writer to enter the critical section concurrently
   \end{itemize}
 \end{frame}
 
-
-\section{Foobar}
-
-\begin{frame}{Outline}
-  \tableofcontents[current]
-\end{frame}
-
-\begin{frame}{Foobar}
+\begin{frame}{Assignment 7}
   \begin{itemize}
-  \item TODO
+  \item Implement a Read/Write Lock
+  \item At most four threads
+  \item At most two reader threads (shared access is allowed) and one
+    writer thread
+  \item A thread that executes \lstinline!read()! is a reader
+    \begin{itemize}
+    \item At a later time it can be a writer...
+    \end{itemize}
   \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]{Code}
-  \begin{lstlisting}
-class HelloWorld {
+\begin{frame}[fragile]{\lstinline!Monitor!}
+\begin{lstlisting}[basicstyle=\fontsize{10}{12}\selectfont\ttfamily]
+public class Monitor {
+  final int MAX_THREADS;
+  final int MAX_READERS = 2;
+  FIFOQueue waitList;
+  int readers = 0;
+  int writers = 0;
+  boolean writing = false;
+  
+  public Monitor(int maxThreads) {
+    MAX_THREADS = maxThreads;
+    waitList = new FIFOQueue(maxThreads);
+  }  
+  
+  public void readLock()    { /* ... */ }
+  public void readUnlock()  { /* ... */ }
+  public void writeLock()   { /* ... */ }
+  public void writeUnlock() { /* ... */ }
+}
+\end{lstlisting}
+\end{frame}
 
-  public static void main(String[] args) {
-    System.out.println("Hello, World!");
+\begin{frame}[fragile]{\lstinline!readLock()!}
+\begin{lstlisting}[basicstyle=\fontsize{7}{9}\selectfont\ttfamily]
+public synchronized void readLock() {
+  if (readers >= MAX_READERS || writing || !waitList.isEmpty()) {
+    waitList.enq(Thread.currentThread().getId());
+
+    while (true) {
+      try {
+        wait();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+
+      if (waitList.getFirstItem() == Thread.currentThread().getId()
+          && !writing && readers < MAX_READERS) {
+        waitList.deq();
+        break;
+      }
+    }
   }
 
+  readers++;
+  if (readers < MAX_READERS)
+    notifyAll();
+  System.out.println("READ LOCK ACQUIRED " + readers);
 }
-  \end{lstlisting}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{\lstinline!readUnlock()!}
+\begin{lstlisting}
+public synchronized void readUnlock() {
+  readers--;
+  System.out.println("READ LOCK RELEASED " + 
+                     readers);
+  notifyAll();
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{\lstinline!writeLock()!}
+\begin{lstlisting}[basicstyle=\fontsize{7}{9}\selectfont\ttfamily]
+public synchronized void writeLock() {
+  if (readers > 0 || writers > 0 || !waitList.isEmpty()) {
+    waitList.enq(Thread.currentThread().getId());
+    while (true) {
+      try {
+        wait();
+      } catch (InterruptedException e) {
+        System.out.println(e.getMessage());
+      }
+
+      if (waitList.getFirstItem() == Thread.currentThread().getId()
+          && !writing && readers == 0) {
+        waitList.deq();
+        break;
+      }
+    }
+  }
+  
+  writers++;
+  writing = true;
+  System.out.println("WRITE LOCK ACQUIRED " + writers);
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{\lstinline!writeUnlock()!}
+\begin{lstlisting}
+public synchronized void writeUnlock() {
+  writing = false;
+  writers--;    
+  System.out.println("WRITE LOCK RELEASED " + 
+                     writers);
+  notifyAll();
+}
+\end{lstlisting}
 \end{frame}
 
 
-\section{New Assignment}
+\section{TODO}
 
 \begin{frame}{Outline}
   \tableofcontents[current]
 \end{frame}
 
-\begin{frame}{Foobar}
+\begin{frame}{TODO}
+  \begin{itemize}
+  \item TODO
+  \end{itemize}
+\end{frame}
+
+
+\section{TODO}
+
+\begin{frame}{Outline}
+  \tableofcontents[current]
+\end{frame}
+
+\begin{frame}{TODO}
+  \begin{itemize}
+  \item TODO
+  \end{itemize}
+\end{frame}
+
+
+\section{TODO}
+
+\begin{frame}{Outline}
+  \tableofcontents[current]
+\end{frame}
+
+\begin{frame}{TODO}
   \begin{itemize}
   \item TODO
   \end{itemize}
@@ -148,7 +276,7 @@ class HelloWorld {
 \begin{frame}{Summary}
   \begin{itemize}
   \item TODO
-  \end{itemize}
+\end{itemize}
 \end{frame}
 
 \end{document}

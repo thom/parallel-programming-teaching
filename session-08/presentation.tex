@@ -87,8 +87,18 @@
 
 \begin{frame}{Executive Summary}
   \begin{itemize}
-  \item TODO
+  \item Some remarks regarding mutual exclusion proofs
+  \item Repeat Read/Write locks
+  \item Classroom exercise: Equivalence of Semaphores and Monitors
+  \item Classroom exercise: Lock proof
+  \item Implement MergeSort and Dining Philosophers with Communicating
+    Sequential Processes
   \end{itemize}
+
+  \begin{center}
+    \includegraphics[width=\textwidth]{figures/butter-jam-deadlock}\\
+    \tiny{Source: \url{http://tnerual.eriogerg.free.fr/software.html}}
+  \end{center}
 \end{frame}
 
 
@@ -413,14 +423,23 @@ public synchronized void writeUnlock() {
 \end{frame}
 
 \begin{frame}{Classroom Exercise}
-  \begin{itemize}
-  \item Are semaphores and monitors equivalent?
-  \item How can you implement semaphores with monitors?
-  \item How can you implement monitors with semaphores?
-    \begin{itemize}
-    \item What about \lstinline!wait()! and \lstinline!notifyAll()!?
-    \end{itemize}
-  \end{itemize}
+  \begin{columns}[c]
+    \begin{column}{0.45\textwidth}
+      \begin{itemize}
+      \item Are semaphores and monitors equivalent?
+      \item How can you implement semaphores with monitors?
+      \item How can you implement monitors with semaphores?
+        \begin{itemize}
+        \item What about \lstinline!wait()! and \lstinline!notifyAll()!?
+        \end{itemize}
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.55\textwidth}
+      \begin{center}
+        \includegraphics[width=\textwidth]{figures/dilbert-wait}
+      \end{center}
+    \end{column}
+  \end{columns}
 \end{frame}
 
 \begin{frame}{Semaphores and Monitors}
@@ -689,8 +708,8 @@ class MyLock implements Lock {
   \end{columns}
 \end{frame}
 
-\begin{frame}{Lock}
-\begin{lstlisting}
+\begin{frame}[fragile]{Lock}
+\begin{lstlisting}[basicstyle=\fontsize{9}{11}\selectfont\ttfamily]
 class MyLock implements Lock {
   private int turn;
   private boolean busy = false;
@@ -712,20 +731,122 @@ class MyLock implements Lock {
 \end{lstlisting}
 \end{frame}
 
-\begin{frame}{TODO}
-  
+\begin{frame}{Mutual Exclusion}
+  Protocol does not satisfy mutual exclusion:
+
+  \vspace{\stretch{1}}
+
+  \begin{itemize}
+  \item Assume \lstinline!ThreadID!s start with a value
+    \lstinline{!= 0}: \lstinline!ThreadID!s don't start with 0
+    $\rightarrow$ they start with 1 in Java
+  \item No thread can enter critical section (could argue this is
+    mutual exclusion but you have to clarify your answer)
+  \item \lstinline!turn! is initialized to 0 $\rightarrow$ one aspect
+    of the broken protocol
+  \end{itemize}
 \end{frame}
 
-\begin{frame}{TODO}
-  
+\begin{frame}[fragile]{Mutual Exclusion}
+  \lstinline!T0! attempts to enter the critical section:
+
+  \vspace{\stretch{1}}
+
+\begin{lstlisting}
+/* S2 */ $\rightarrow$ true // me != 0
+/* S3 */ false
+/* S5 */ busy = true
+/* S2 */ true
+/* S3 */ true // bye virtue of S5, 
+              // previous iteration
+/* S4 */ turn = me
+/* S3 */ true // no exit from loop
+\end{lstlisting}
+
+  \vspace{\stretch{1}}
+
+  If another thread attempts to enter the critical section then it
+  will experience the same sequence
 \end{frame}
 
-\begin{frame}{TODO}
-  
+\begin{frame}[fragile]{Mutual Exclusion}
+  \begin{itemize}
+  \item Assume that \lstinline!ThreadID!s start at 0 or
+    \lstinline!turn! is initialized to the \lstinline!ThreadID! of the
+    first thread (i.e. 1) to enter the critical section
+  \item This thread succeeds but does not set \lstinline!busy! to
+    true:
+\begin{lstlisting}
+/* S1 */   me = 0 // by assumption
+/* S2 */   $\rightarrow$ false
+\end{lstlisting}
+    Loop exits but \lstinline!busy! unchanged (\lstinline!false!)
+  \end{itemize}
 \end{frame}
 
-\begin{frame}{TODO}
-  
+\begin{frame}{Starvation}
+  \begin{itemize}
+  \item Protocol is not starvation-free
+  \item Assume there are two threads:
+    \begin{itemize}
+    \item If \lstinline!turn! is not initialized to the
+      \lstinline!ThreadID! of the first thread to acquire the lock,
+      then this thread will be not able to enter its critical section
+    \item If \lstinline!turn! is initialized then the second thread
+      never enters its critical section if the first thread leaves its
+      critical section (with \lstinline!unlock()!) before the second
+      thread attempts to enter its critical section
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Deadlock}
+  \begin{columns}[c]
+    \begin{column}{0.6\textwidth}
+      \begin{itemize}
+      \item Protocol is not deadlock-free
+      \item Situation for deadlock is similar to the situation for
+        starvation in this case
+      \item The thread will enter the lock method but never exit
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \begin{center}
+        \includegraphics[width=\textwidth]{figures/deadlock}\\
+        \tiny{Source: \url{http://dbwhisperer.blogspot.com/2009/07/deadlocks-explained.html}}
+      \end{center}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+
+\section{JCSP: Semaphores}
+
+\begin{frame}{Outline}
+  \tableofcontents[current]
+\end{frame}
+
+\begin{frame}[fragile]{Semaphores}
+  \begin{itemize}
+  \item Special Integer variable wit 2 atomic operations
+    \begin{itemize}
+    \item \lstinline!P()!: Passeren, wait/up
+    \item \lstinline!V()!: Vrijgeven/Verhogen, signal/down
+    \end{itemize}
+  \item Map into JCSP by defining a semaphore process
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Semaphores in JCSP}
+  \begin{itemize}
+  \item Semaphore \lstinline!CSProcess!
+  \item Two channels for \lstinline!P! and \lstinline!V!
+  \item Two + Two channels
+    \begin{itemize}
+    \item \lstinline!P! -- request/confirm
+    \item \lstinline!V! -- request/confirm
+    \end{itemize}
+  \end{itemize}
 \end{frame}
 
 
@@ -735,21 +856,124 @@ class MyLock implements Lock {
   \tableofcontents[current]
 \end{frame}
 
-\begin{frame}{TODO}
-
+\begin{frame}{Overview}
+  \begin{itemize}
+  \item Thread hierarchy similar to previous mergesort assignment
+  \item Threads are replaced with JCSP processes
+  \item Communication allowed only via JCSP channels – no shared data
+    between processes
+  \item Use the JCSP library provided on the website
+  \end{itemize}
 \end{frame}
 
-\begin{frame}{TODO}
-
+\begin{frame}{Entities Description}
+  \begin{description}
+  \item[Sorting process:] randomly generates a subarray, sorts it
+    sequentially, and then passes the result to its parent merging
+    process
+  \item[Merging process:] takes 2 sorted subarrays from its children,
+    merges and passes the result to its parent merging process
+  \item[Communication channel:] allows data passing between processes
+  \end{description}
 \end{frame}
 
-\begin{frame}{TODO}
-
+\begin{frame}{Entities Layout}
+  \includegraphics[width=\textwidth]{figures/mergesort}
 \end{frame}
 
-\begin{frame}{TODO}
+\begin{frame}{Reading Policy}
+  How can the data from 2 children be read?
 
+  \vspace{\stretch{1}}
+
+  \begin{enumerate}
+  \item Read all data from first child, then read all data from second
+    child
+   \begin{itemize}
+   \item Read whole subarray
+   \end{itemize}
+ \item Read data from both children simultaneously
+   \begin{itemize}
+   \item Read whole subarray
+   \end{itemize}
+ \item Similar to (2), but read data in pairs and proceed to output
+   current element of the not-yet-fully-sorted subarray
+   \begin{itemize}
+   \item Read subarray element-wise
+   \end{itemize}
+
+  \end{enumerate}
 \end{frame}
+
+\begin{frame}[fragile]{Skeleton}
+\begin{lstlisting}[basicstyle=\fontsize{7}{9}\selectfont\ttfamily]
+import org.jcsp.lang.*;
+
+public class MergeSort {
+  // TODO: add possible fields and methods
+  
+  public static void main(String[] args) {
+    // the total number of JCSP processes that will be run 
+    // (will be changed, of course, by your code)
+    int numberOfProcesses = 0;
+    
+    // TODO: add code here
+    
+    // create process array
+    CSProcess[] allProcesses = new CSProcess[numberOfProcesses];
+    
+    // TODO: add code here
+    
+    // run all JCSP processes, they should synchronize via the 
+    // communication channels
+    Parallel parallel = new Parallel(allProcesses);
+    parallel.run();
+  }
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Skeleton: Sorting}
+\begin{lstlisting}[basicstyle=\fontsize{9}{11}\selectfont\ttfamily]
+import java.util.Random;
+import org.jcsp.lang.*;
+
+public class SortingProcess implements CSProcess {
+  // TODO: add possible fields/methods
+  
+  public SortingProcess() {
+    // TODO: add code, change signature if necessary
+  }
+    
+  public void run() {
+    // TODO: initialize random subarray (or do it in
+    //       the constructor, alternatively), sort
+    //       it sequentially, and write it to parent
+   }
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Skeleton: Merging}
+\begin{lstlisting}[basicstyle=\fontsize{9}{11}\selectfont\ttfamily]
+import org.jcsp.lang.*;
+
+public class MergingProcess implements CSProcess {
+  // TODO: add possible fields/methods
+  
+  public MergingProcess() {
+    // TODO: add code, change signature if necessary
+  }
+  
+  // the process' run() method
+  public void run() {
+    // TODO: read subarrays from children, merge them, 
+    //       write merged subarray to parent
+  }
+}
+\end{lstlisting}
+\end{frame}
+
 
 \section{JCSP: Dining Philosophers}
 
@@ -757,20 +981,126 @@ class MyLock implements Lock {
   \tableofcontents[current]
 \end{frame}
 
-\begin{frame}{TODO}
-http://en.wikipedia.org/wiki/File:Dining_philosophers.png
+\begin{frame}{Dining Philosophers}
+  \begin{center}
+    \includegraphics[width=0.65\textwidth]{figures/dining-philosophers} \\
+    \tiny{Source: \url{http://en.wikipedia.org/wiki/File:Dining_philosophers.png}}
+  \end{center}
 \end{frame}
 
-\begin{frame}{TODO}
-
+\begin{frame}{Dining Philosophers}
+  \begin{itemize}
+  \item Five philosophers sitting at a table doing one of two things:
+    \begin{itemize}
+    \item eating or
+    \item thinking
+    \end{itemize}
+  \item While eating, they are not thinking, and while thinking, they
+    are not eating
+  \item Philosophers sit at a circular table with a large bowl of
+    spaghetti in the center
+  \item Each philosopher has one fork to his left and one fork to his
+    right
+  \item Philosopher must eat with two forks: Can only use the forks on
+    his immediate left and immediate right
+  \end{itemize}
 \end{frame}
 
-\begin{frame}{TODO}
+\begin{frame}{Deadlock and Starvation}
+  \begin{block}{Deadlock}
+    Philosophers never speak to each other: creates a dangerous
+    possibility of deadlock when every philosopher holds a left fork
+    and waits perpetually for a right fork (or vice versa)
+  \end{block}
 
+  \vspace{\stretch{1}}
+
+  \begin{block}{Starvation}
+    Starvation -- pun intended -- might also occur independently of
+    deadlock if a philosopher is unable to acquire both forks because
+    of a timing problem.
+  \end{block}
 \end{frame}
 
-\begin{frame}{TODO}
+\begin{frame}{Strategies to Avoid Deadlock}
+  \begin{columns}[c]
+    \begin{column}{0.45\textwidth}
+  \begin{itemize}
+  \item Security Guard: limits entry to dining hall
+  \item Asymmetric philosophers: 4 philosophers pick up left fork
+    first, 1 philosopher picks up right fork first
+  \item See \url{http://en.wikipedia.org/wiki/Dining_philosophers_problem\#Solutions} 
+    for other strategies
+  \end{itemize}
+    \end{column}
+    \begin{column}{0.55\textwidth}
+      \begin{center}
+        \includegraphics[width=\textwidth]{figures/dining-philosophers} \\
+        \tiny{Source: \url{http://en.wikipedia.org/wiki/File:Dining_philosophers.png}}
+      \end{center}
+    \end{column}
+  \end{columns}
+\end{frame}
 
+\begin{frame}[fragile]{Skeleton: Main}
+\begin{lstlisting}[basicstyle=\fontsize{7}{9}\selectfont\ttfamily]
+import org.jcsp.lang.CSProcess;
+import org.jcsp.lang.Parallel;
+
+public class Main implements CSProcess {
+  private final static int NUM_PHILOSOPHERS = 5;
+  private final CSProcess go;
+
+  public Main() {
+    final Philosopher[] philosophers = new Philosopher[NUM_PHILOSOPHERS];
+    for (int i = 0; i < philosophers.length; i++) {
+      philosophers[i] = new Philosopher(i);
+    }
+    go = new Parallel(new CSProcess[] {new Parallel(philosophers)});
+  }
+
+  @Override
+  public void run() {
+    go.run();
+  }
+
+  public static void main(String[] args) {
+    new Main().run();
+  }
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Skeleton: Philosopher}
+\begin{lstlisting}[basicstyle=\fontsize{6}{8}\selectfont\ttfamily]
+import org.jcsp.lang.CSProcess;
+
+public class Philosopher implements CSProcess {
+  private final int ID;
+  public Philosopher(int id) {
+    this.ID = id;
+  }
+
+  @Override
+  public void run() {
+    try {
+      for (;;) {
+        think(); eat();      
+      }
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+  }
+  private void think() throws InterruptedException { 
+    Thread.sleep((long)(Math.random() * 500));
+    System.out.println("Philosopher " + ID + " : Thinking...");
+  }
+  private void eat() throws InterruptedException {
+    Thread.sleep((long)(Math.random() * 500));
+    System.out.println("Philosopher " + ID + " : Please, give me two forks!");
+  }
+}
+\end{lstlisting}
 \end{frame}
 
 
@@ -778,8 +1108,18 @@ http://en.wikipedia.org/wiki/File:Dining_philosophers.png
 
 \begin{frame}{Summary}
   \begin{itemize}
-  \item TODO
-\end{itemize}
+  \item Mutual exclusion proofs
+  \item Read/Write locks
+  \item Equivalence of Semaphores and Monitors
+  \item Lock proof
+  \item MergeSort and Dining Philosophers in JCSP
+  \end{itemize}
+
+  \vspace{\stretch{1}}
+
+  \begin{center}
+    \includegraphics[scale=0.4]{figures/dilbert-turing-test}
+  \end{center}
 \end{frame}
 
 \end{document}

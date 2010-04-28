@@ -92,6 +92,180 @@
 \end{frame}
 
 
+\section{Mutual Exclusion Proofs}
+
+\begin{frame}{Outline}
+  \tableofcontents[current]
+\end{frame}
+
+\begin{frame}[fragile]{Notation}
+\begin{lstlisting}
+public void run() {
+  while (true) {
+    mysignal.request();
+    while (true) {
+      if (othersignal.read() == 1) break;
+      mysignal.free();
+      mysignal.request();
+    }
+    // critical section
+    mysignal.free();
+  }
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Notation}
+  \begin{columns}[c]
+    \begin{column}{0.50\textwidth}
+\begin{lstlisting}[basicstyle=\fontsize{9}{11}\selectfont\ttfamily]
+A1 // non-critical section
+A2 turn0.flag = 0;
+A3 while(true)
+     if(turn1.flag == 1) 
+       break;
+A4   turn0.flag = 1;
+A5   turn0.flag = 0;
+   }
+A6 // critical section
+A7 turn0.flag = 1;
+\end{lstlisting}
+    \end{column}
+    \begin{column}{0.50\textwidth}
+\begin{lstlisting}[basicstyle=\fontsize{9}{11}\selectfont\ttfamily]
+B1 // non-critical section
+B2 turn1.flag = 0;
+B3 while(true) {
+     if(turn0.flag == 1) 
+       break;
+B4   turn1.flag = 1;
+B5   turn1.flag = 0;
+   }
+B6 // critical section
+B7 turn1.flag = 1;
+\end{lstlisting}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Implication}
+  \begin{enumerate}
+  \item \lstinline!at(A6)! $\rightarrow$ \lstinline!turn0.flag == 0!
+  \end{enumerate}
+
+  \vspace{\stretch{1}}
+
+\begin{lstlisting}
+  A1 // non-critical section
+  A2 turn0.flag = 0;
+  A3 while(true)
+       if(turn1.flag == 1) 
+         break;
+  A4   turn0.flag = 1;
+  A5   turn0.flag = 0;
+     }
+  A6 // critical section
+  A7 turn0.flag = 1;
+\end{lstlisting}
+
+  \vspace{\stretch{1}}
+
+  Why is invariant (1) true \lstinline!at(A1)!, \lstinline!at(A2)!,
+  \lstinline!at(A3)!, \lstinline!at(A4)!, \lstinline!at(A5)!,
+  \lstinline!at(A7)!?
+\end{frame}
+
+\begin{frame}{Implication: Truth Table}
+  $$A \rightarrow B$$
+
+  \vspace{\stretch{1}}
+
+  \begin{center}
+    \begin{tabular}{|c|c c|}
+      \hline
+      $\rightarrow$ & 1 & 0 \\\hline
+      1 & 1 & 0 \\
+      0 & 1 & 1 \\\hline
+    \end{tabular}
+  \end{center}
+
+  \vspace{\stretch{1}}
+
+  \begin{enumerate}
+  \item \lstinline!at(A6)! $\rightarrow$ \lstinline!turn0.flag == 0!
+  \end{enumerate}
+
+  \vspace{\stretch{1}}
+
+  \begin{itemize}
+  \item \lstinline!at(A1)!: $0 \rightarrow x = 1$
+  \item \lstinline!at(A2)!: $0 \rightarrow x = 1$
+  \item \lstinline!at(A3)!: $0 \rightarrow x = 1$
+  \item \lstinline!at(A4)!: $0 \rightarrow x = 1$
+  \item \lstinline!at(A5)!: $0 \rightarrow x = 1$
+  \item \lstinline!at(A7)!: $0 \rightarrow x = 1$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Equivalence}
+  \begin{enumerate}
+  \item \lstinline!turn0.flag == 0! $\leftrightarrow$ 
+    \lstinline!(at(A3) $\vee$ at(A4) $\vee$ at(A6) $\vee$ at(A7))!
+  \end{enumerate}
+
+  \vspace{\stretch{1}}
+
+\begin{lstlisting}
+  A1 // non-critical section
+  A2 turn0.flag = 0;
+  A3 while(true)
+       if(turn1.flag == 1) 
+         break;
+  A4   turn0.flag = 1;
+  A5   turn0.flag = 0;
+     }
+  A6 // critical section
+  A7 turn0.flag = 1;
+\end{lstlisting}
+
+  \vspace{\stretch{1}}
+
+  \lstinline!A4 $\rightarrow$ A5! and \lstinline!A7 $\rightarrow$ A1!:
+  \lstinline!S0.flag == 1!, why does invariant (1) still hold?
+\end{frame}
+
+\begin{frame}{Equivalence: Truth Table}
+  $$A \leftrightarrow B$$
+
+  \vspace{\stretch{1}}
+
+  \begin{center}
+    \begin{tabular}{|c|c c|}
+      \hline
+      $\leftrightarrow$ & 1 & 0 \\\hline
+      1 & 1 & 0 \\
+      0 & 0 & 1 \\\hline
+    \end{tabular}
+  \end{center}
+
+  \vspace{\stretch{1}}
+
+  \begin{enumerate}
+  \item \lstinline!turn0.flag == 0! $\leftrightarrow$ 
+    \lstinline!(at(A3) $\vee$ at(A4) $\vee$ at(A6) $\vee$ at(A7))!
+  \end{enumerate}
+
+  \vspace{\stretch{1}}
+
+  \begin{itemize}  
+  \item \lstinline!A4 $\rightarrow$ A5! $==$ \lstinline!at(A5)!: $0
+    \leftrightarrow 0 = 1$
+  \item \lstinline!A7 $\rightarrow$ A1! $==$ \lstinline!at(A1)!: $0
+    \leftrightarrow 0 = 1$
+  \end{itemize}
+\end{frame}
+
+
 \section{Read/Write Lock}
 
 \begin{frame}{Outline}
@@ -232,42 +406,371 @@ public synchronized void writeUnlock() {
 \end{frame}
 
 
-\section{TODO}
+\section{Equivalence of Semaphores and Monitors}
+
+\begin{frame}{Outline}
+  \tableofcontents[current]
+\end{frame}
+
+\begin{frame}{Classroom Exercise}
+  \begin{itemize}
+  \item Are semaphores and monitors equivalent?
+  \item How can you implement semaphores with monitors?
+  \item How can you implement monitors with semaphores?
+    \begin{itemize}
+    \item What about \lstinline!wait()! and \lstinline!notifyAll()!?
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Semaphores and Monitors}
+  \begin{itemize}
+  \item Monitor: model for synchronized methods in Java
+  \item Both constructs are equivalent
+  \item \alert{One can be used to implement the other}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Semaphore Implementation}
+\begin{lstlisting}
+public class Semaphore {
+  private int value;
+  public Semaphore() { 
+    value = 0; 
+  }
+  public Semaphore(int k) { 
+    value = k; 
+  }
+  public synchronized void acquire() { 
+    /* see later */ 
+  }
+  public synchronized void release() { 
+    /* see later */ 
+  }   
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Semaphore Implementation: \lstinline!acquire()!}
+\begin{lstlisting}
+public synchronized void acquire() {
+  while (value == 0) {
+    try {
+      wait();
+    }
+    catch (InterruptedException e) { 
+    }
+  }
+  value--;
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Semaphore Implementation: \lstinline!release()!}
+\begin{lstlisting}
+public synchronized void release() {
+  ++value;
+  notifyAll();
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{Monitor with Semaphores}
+  We need 2 semaphores:
+  \begin{itemize}
+  \item	One to make sure that only one synchronized method executes at any given time
+    \begin{itemize}
+    \item call this the ``access semaphore'' \lstinline!access!
+    \item binary semaphore
+    \end{itemize}
+  \item One semaphore to line up threads that are waiting for some condition
+    \begin{itemize}
+    \item call this the ``condition semaphore'' \lstinline!cond!
+    \item counting (general) semaphore
+    \item threads that wait must do an ``acquire''
+    \end{itemize}
+  \end{itemize}
+
+  \vspace{\stretch{1}}
+
+  \begin{block}{For convenience}
+    Counter \lstinline!waitThread! to count number of waiting threads
+    i.e., threads in queue for \lstinline!cond!
+  \end{block}  
+\end{frame}
+
+\begin{frame}{Monitor with Semaphores}
+  \begin{enumerate}
+  \item Frame all synchronized methods with \lstinline!access.acquire()! and
+    \lstinline!access.release()!
+    \begin{itemize}
+    \item This ensures that only one thread executes a synchronized
+      method at any point in time
+    \item Recall: \lstinline!access! is binary.
+    \end{itemize}
+  \item Translate \lstinline!wait()! and \lstinline!notifyAll()! to give threads waiting in
+    line a chance to progress (these threads use \lstinline!cond!)
+  \end{enumerate}  
+\end{frame}
+
+\begin{frame}[fragile]{Monitor with Semaphores: Auxiliary Fields}
+\begin{lstlisting}
+class FooBar {
+  private Semaphore access;
+  private Semaphore cond;
+  private int waitThread = 0;
+
+  public FooBar() { 
+    access = new Semaphore(1);
+    cond = new Semaphore(0);
+  }
+  
+  // continued
+}
+\end{lstlisting}  
+\end{frame}
+
+\begin{frame}[fragile]{(1) Framing all methods}
+\begin{lstlisting}
+  public void qux() {
+    // Ensure mutual exclusion
+    access.acquire(); 
+
+    // Critical section
+
+    access.release();
+  }
+\end{lstlisting}
+
+  \vspace{\stretch{1}}
+
+  is equivalent to
+
+  \vspace{\stretch{1}}
+
+\begin{lstlisting}
+  public synchronized void qux() {
+    // Critical section
+  }
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{(2) Translate \lstinline!wait()!}
+\begin{lstlisting}
+waitThread++;
+
+// other threads can execute 
+// synchronized methods 
+access.release(); 
+
+// wait till condition changes
+cond.acquire(); 
+access.acquire();
+
+waitThread--;
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{(2) Translate \lstinline!notifyAll()!}
+\begin{lstlisting}
+if (waitThread > 0) {
+  for (int i=0; i < waitThread; i++) { 
+    cond.release();
+  }
+}	
+\end{lstlisting}
+
+  \vspace{\stretch{1}}
+
+  \begin{itemize}
+  \item All threads waiting are released and will compete to
+    (re)acquire \lstinline!access!
+  \item They decrement \lstinline!waitThread! after they leave
+    \lstinline!cond.acquire()!
+  \item Note that to enter the line (i.e., increment
+    \lstinline!waitThread!) the thread must hold the access semaphore
+    \lstinline!access!
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{(2) Translate \lstinline!wait()! and \lstinline!notifyAll()!}
+  \begin{itemize}
+  \item Recall that \lstinline!access.release()! is done at the end of
+    the synchronized method
+  \item So all the threads that had lined up waiting for
+    \lstinline!cond! compete to get access to \lstinline!access!
+  \item No thread can line up while the \lstinline!cond.release()!
+    operations are done since this thread holds \lstinline!access!
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Note}
+  \begin{itemize}
+  \item We wake up all threads -- they might not be able to enter
+    their critical section if the condition they waited for does not
+    hold, but all threads get a chance.
+  \item \lstinline!notifyAll()! calls \lstinline!cond.release()!
+    \lstinline!waitThread!-times
+    \begin{itemize}
+    \item If 3 threads were waiting, \lstinline!cond.value! is set to 3.
+    \item Now one of thread wakes up, decrements
+      \lstinline!waitThreads!, runs to the end and again calls
+      \lstinline!cond.release()! 2 times $\rightarrow$
+      \lstinline!cond.value! will now be at 4 even though only 2
+      threads are in the wait section of the code
+    \item A thread may awake a few times and not find that the
+      condition has changed. As long as all the \lstinline!wait()! are
+      in \lstinline!while (some_condition)! loop there will be no harm
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{\lstinline!wait()! in while-loop}
+\begin{lstlisting}[basicstyle=\fontsize{9}{11}\selectfont\ttfamily]
+public void insert(Object o) 
+  throws InterruptedException {
+  access.acquire();
+  while (isFull()) {
+    waitThread++;
+    access.release(); // let other thread access object
+    cond.acquire(); // wait for change of state
+    access.acquire()
+    waitThread--;
+  }
+  doInsert(o);	
+  if (waitThread > 0) { 
+    for (int i; i < waitThread; i++) {
+      cond.release(); 
+    } 
+  }
+  access.release(); 
+}
+\end{lstlisting}
+\end{frame}
+
+
+\section{Lock Proof}
+
+\begin{frame}{Outline}
+  \tableofcontents[current]
+\end{frame}
+
+\begin{frame}[fragile]{Classroom Exercise}
+  \begin{columns}[c]
+    \begin{column}{0.50\textwidth}
+\begin{lstlisting}[basicstyle=\fontsize{9}{11}\selectfont\ttfamily]
+class MyLock implements Lock {
+  private int turn;
+  private boolean busy = false;
+
+  public void lock() {
+    int me = ThreadID.get();
+    while (turn != me) {
+      while (busy) {
+        turn = me;
+      }
+      busy = true;
+    }
+  }
+
+  public void unlock() {
+    busy = false;
+  }
+}
+\end{lstlisting}
+    \end{column}
+    \begin{column}{0.50\textwidth}
+      \begin{itemize}
+      \item Does this protocol satisfy mutual exclusion?
+      \item Is this protocol starvation-free?
+      \item Is this protocol deadlock-free?
+  \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Lock}
+\begin{lstlisting}
+class MyLock implements Lock {
+  private int turn;
+  private boolean busy = false;
+
+  public void lock() {
+/* S1 */    int me = ThreadID.get();
+/* S2 */    while (turn != me) {
+/* S3 */      while (busy) {
+/* S4 */        turn = me;
+              }
+/* S5 */      busy = true;
+            }
+  }
+
+  public void unlock() {
+/* S6 */    busy = false;
+  }
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{TODO}
+  
+\end{frame}
+
+\begin{frame}{TODO}
+  
+\end{frame}
+
+\begin{frame}{TODO}
+  
+\end{frame}
+
+\begin{frame}{TODO}
+  
+\end{frame}
+
+
+\section{JCSP: MergeSort}
 
 \begin{frame}{Outline}
   \tableofcontents[current]
 \end{frame}
 
 \begin{frame}{TODO}
-  \begin{itemize}
-  \item TODO
-  \end{itemize}
+
 \end{frame}
 
+\begin{frame}{TODO}
 
-\section{TODO}
+\end{frame}
+
+\begin{frame}{TODO}
+
+\end{frame}
+
+\begin{frame}{TODO}
+
+\end{frame}
+
+\section{JCSP: Dining Philosophers}
 
 \begin{frame}{Outline}
   \tableofcontents[current]
 \end{frame}
 
 \begin{frame}{TODO}
-  \begin{itemize}
-  \item TODO
-  \end{itemize}
-\end{frame}
-
-
-\section{TODO}
-
-\begin{frame}{Outline}
-  \tableofcontents[current]
+http://en.wikipedia.org/wiki/File:Dining_philosophers.png
 \end{frame}
 
 \begin{frame}{TODO}
-  \begin{itemize}
-  \item TODO
-  \end{itemize}
+
+\end{frame}
+
+\begin{frame}{TODO}
+
+\end{frame}
+
+\begin{frame}{TODO}
+
 \end{frame}
 
 

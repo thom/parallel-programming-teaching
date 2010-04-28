@@ -1,0 +1,23 @@
+class MyLock implements Lock {
+  private int turn;
+  private boolean busy = false;
+
+  public void lock() {
+/* S1 */    int me = ThreadID.get();
+/* S2 */    while (turn != me) {
+/* S3 */      while (busy) {
+/* S4 */        turn = me;
+              }
+/* S5 */      busy = true;
+            }
+  }
+
+  public void unlock() {
+/* S6 */    busy = false;
+  }
+}
+
+
+* Does this protocol satisfy mutual exclusion?
+* Is this protocol starvation-free?
+* Is this protocol deadlock-free?

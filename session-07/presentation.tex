@@ -434,11 +434,11 @@ public synchronized void V() {
       \item \lstinline!wait()! tells the calling thread to give up the
         monitor and go to sleep until some other thread enters the
         same monitor and calls \lstinline!notify()!
-      \item \lstinline!notify()! wakes up the first thread that called
-        \lstinline!wait()! on the same object
-      \item \lstinline!notifyAll()! wakes up all the threads that
-        called \lstinline!wait()! on the same object, the highest
-        priority thread will run first
+      \item \lstinline!notify()! wakes up a single thread that is
+        waiting on this object's monitor. The choice is arbitrary and
+        occurs at the discretion of the implementation.
+      \item \lstinline!notifyAll()! wakes up all threads that are
+        waiting on this object's monitor
       \end{itemize}
     \end{column}
     \begin{column}{0.5\textwidth}
@@ -580,13 +580,13 @@ class BoundedBuffer extends Buffer {
   \begin{itemize}
   \item	One to make sure that only one synchronized method executes at any given time
     \begin{itemize}
-    \item call this the ``access semaphore'' \lstinline!S!
+    \item call this the ``access semaphore'' \lstinline!access!
     \item binary semaphore
     \end{itemize}
   \item One semaphore to line up threads that are waiting for some condition
     \begin{itemize}
-    \item call this the ``condition semaphore'' \lstinline!SCond!
-    \item binary semaphore
+    \item call this the ``condition semaphore'' \lstinline!cond!
+    \item counting (general) semaphore
     \item threads that wait must do an ``acquire''
     \end{itemize}
   \end{itemize}
@@ -595,21 +595,21 @@ class BoundedBuffer extends Buffer {
 
   \begin{block}{For convenience}
     Counter \lstinline!waitThread! to count number of waiting threads
-    i.e., threads in queue for \lstinline!SCond!
+    i.e., threads in queue for \lstinline!cond!
   \end{block}
 \end{frame}
 
 \begin{frame}{Basic idea}
   \begin{enumerate}
-  \item Frame all synchronized methods with \lstinline!S.acquire()! and
-    \lstinline!S.release()!
+  \item Frame all synchronized methods with \lstinline!access.acquire()! and
+    \lstinline!access.release()!
     \begin{itemize}
     \item This ensures that only one thread executes a synchronized
       method at any point in time
-    \item Recall: \lstinline!S! is binary.
+    \item Recall: \lstinline!access! is binary.
     \end{itemize}
   \item Translate \lstinline!wait()! and \lstinline!notifyAll()! to give threads waiting in
-    line a chance to progress (these threads use \lstinline!SCond!)
+    line a chance to progress (these threads use \lstinline!cond!)
     \begin{itemize}
     \item To simplify the implementation, we require that
       \lstinline!notifyAll()! is the last action in a synchronized
@@ -678,11 +678,11 @@ waitThread++;
 
 // other threads can execute 
 // synchronized methods 
-S.release(); 
+access.release(); 
 
 // wait till condition changes
-SCond.acquire(); 
-S.acquire();
+cond.acquire(); 
+access.acquire();
 
 waitThread--;
 \end{lstlisting}
@@ -692,7 +692,7 @@ waitThread--;
 \begin{lstlisting}
 if (waitThread > 0) {
   for (int i=0; i < waitThread; i++) { 
-    SCond.release();
+    cond.release();
   }
 }	
 \end{lstlisting}
@@ -701,23 +701,23 @@ if (waitThread > 0) {
 
   \begin{itemize}
   \item All threads waiting are released and will compete to
-    (re)acquire \lstinline!S!
+    (re)acquire \lstinline!access!
   \item They decrement \lstinline!waitThread! after they leave
-    \lstinline!SCond.acquire()!
+    \lstinline!cond.acquire()!
   \item Note that to enter the line (i.e., increment
     \lstinline!waitThread!) the thread must hold the access semaphore
-    \lstinline!S!
+    \lstinline!access!
   \end{itemize}
 \end{frame}
 
 \begin{frame}{(2) Translate \lstinline!wait()! and \lstinline!notifyAll()!}
   \begin{itemize}
-  \item Recall that \lstinline!S.release()! is done at the end of the
+  \item Recall that \lstinline!access.release()! is done at the end of the
     synchronized method
   \item So all the threads that had lined up waiting for
-    \lstinline!SCond! compete to get access to \lstinline!S!
-  \item No thread can line up while the \lstinline!SCond.release()!
-    operations are done since this thread holds \lstinline!S!
+    \lstinline!cond! compete to get access to \lstinline!access!
+  \item No thread can line up while the \lstinline!cond.release()!
+    operations are done since this thread holds \lstinline!access!
   \end{itemize}
 \end{frame}
 
@@ -812,8 +812,8 @@ public void insert(Object o)
   \item \lstinline!I3! -- \lstinline!cond.acquire! -- blocks on \lstinline!cond!
   \item \lstinline!E! -- \lstinline!access.acquire()!
   \item remove item
-  \item \lstinline!E! -- \lstinline!SCond.release()!
-  \item \lstinline!E! -- \lstinline!SCond.release()!
+  \item \lstinline!E! -- \lstinline!cond.release()!
+  \item \lstinline!E! -- \lstinline!cond.release()!
   \item \lstinline!E! -- \lstinline!access.release()!
   \end{itemize}
 

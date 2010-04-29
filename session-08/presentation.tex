@@ -86,19 +86,24 @@
 \section*{Introduction}
 
 \begin{frame}{Executive Summary}
-  \begin{itemize}
-  \item Some remarks regarding mutual exclusion proofs
-  \item Repeat Read/Write locks
-  \item Classroom exercise: Equivalence of Semaphores and Monitors
-  \item Classroom exercise: Lock proof
-  \item Implement MergeSort and Dining Philosophers with Communicating
-    Sequential Processes
+  \begin{columns}[c]
+    \begin{column}{0.6\textwidth}
+      \begin{itemize}
+      \item Some remarks regarding mutual exclusion proofs
+      \item Repeat Read/Write locks
+      \item Classroom exercise: Equivalence of Semaphores and Monitors
+      \item Classroom exercise: Lock proof
+      \item Implement MergeSort and Dining Philosophers with
+        Communicating Sequential Processes
   \end{itemize}
-
-  \begin{center}
-    \includegraphics[width=\textwidth]{figures/butter-jam-deadlock}\\
-    \tiny{Source: \url{http://tnerual.eriogerg.free.fr/software.html}}
-  \end{center}
+      \end{column}
+    \begin{column}{0.4\textwidth}
+      \begin{center}
+        \includegraphics[width=0.9\textwidth]{figures/deadlock}\\
+        \tiny{Source: \url{http://dbwhisperer.blogspot.com/2009/07/deadlocks-explained.html}}
+      \end{center}
+    \end{column}
+  \end{columns}
 \end{frame}
 
 
@@ -632,11 +637,11 @@ if (waitThread > 0) {
     \lstinline!waitThread!-times
     \begin{itemize}
     \item If 3 threads were waiting, \lstinline!cond.value! is set to 3.
-    \item Now one of thread wakes up, decrements
+    \item Now one of the threads wakes up, decrements
       \lstinline!waitThreads!, runs to the end and again calls
       \lstinline!cond.release()! 2 times $\rightarrow$
-      \lstinline!cond.value! will now be at 4 even though only 2
-      threads are in the wait section of the code
+      \lstinline!cond.value! will now be 4 even though only 2 threads
+      are in the wait section of the code
     \item A thread may awake a few times and not find that the
       condition has changed. As long as all the \lstinline!wait()! are
       in \lstinline!while (some_condition)! loop there will be no harm
@@ -801,22 +806,12 @@ class MyLock implements Lock {
 \end{frame}
 
 \begin{frame}{Deadlock}
-  \begin{columns}[c]
-    \begin{column}{0.6\textwidth}
-      \begin{itemize}
-      \item Protocol is not deadlock-free
-      \item Situation for deadlock is similar to the situation for
-        starvation in this case
-      \item The thread will enter the lock method but never exit
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.4\textwidth}
-      \begin{center}
-        \includegraphics[width=\textwidth]{figures/deadlock}\\
-        \tiny{Source: \url{http://dbwhisperer.blogspot.com/2009/07/deadlocks-explained.html}}
-      \end{center}
-    \end{column}
-  \end{columns}
+  \begin{itemize}
+  \item Protocol is not deadlock-free
+  \item Situation for deadlock is similar to the situation for
+    starvation in this case
+  \item The thread will enter the lock method but never exit
+  \end{itemize}
 \end{frame}
 
 
@@ -828,7 +823,7 @@ class MyLock implements Lock {
 
 \begin{frame}[fragile]{Semaphores}
   \begin{itemize}
-  \item Special Integer variable wit 2 atomic operations
+  \item Special Integer variable with 2 atomic operations
     \begin{itemize}
     \item \lstinline!P()!: Passeren, wait/up
     \item \lstinline!V()!: Vrijgeven/Verhogen, signal/down
@@ -1013,12 +1008,14 @@ public class MergingProcess implements CSProcess {
     and waits perpetually for a right fork (or vice versa)
   \end{block}
 
-  \vspace{\stretch{1}}
+  \begin{center}
+    \includegraphics[width=0.85\textwidth]{figures/butter-jam-deadlock}
+  \end{center}
 
   \begin{block}{Starvation}
     Starvation -- pun intended -- might also occur independently of
     deadlock if a philosopher is unable to acquire both forks because
-    of a timing problem.
+    of a timing problem
   \end{block}
 \end{frame}
 

@@ -241,29 +241,235 @@ class Foo {
 \end{frame}
 
 
-\section{JSCP}
+\section{JCSP: Classroom Exercises}
+
+\begin{frame}{Outline}
+  \tableofcontents[current]
+\end{frame}
+
+\begin{frame}[fragile]{Exercise 1}
+  What is the output of the following JCSP program?
+
+  \vspace{\stretch{1}}
+
+\begin{lstlisting}[basicstyle=\fontsize{9}{11}\selectfont\ttfamily]
+import org.jcsp.lang.*;
+
+public class ClassroomExercise1 {
+  public static void main(String[] args) {
+    One2OneChannel chanA = Channel.one2one();
+    One2OneChannel chanB = Channel.one2one();
+
+    System.out.println("Start");
+    new Parallel(
+      new CSProcess[] { 
+        new Process1(chanA.out(), chanB.out()),
+        new Process2(chanA.in(), chanB.in()) 
+      }
+    ).run();
+    System.out.println("End");
+  }
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Exercise 1: Proccess 1}
+\begin{lstlisting}[basicstyle=\fontsize{9}{11}\selectfont\ttfamily]
+class Process1 implements CSProcess {
+  private ChannelOutput out1;
+  private ChannelOutput out2;
+
+  public Process1(ChannelOutput out1, 
+                  ChannelOutput out2) {
+    this.out1 = out1;
+    this.out2 = out2;
+  }
+
+  public void run() {
+    for (int i = 2; i <= 100; i = i + 2) {
+      out1.write(new Integer(i));
+      out2.write(new Integer(i + 1));
+    }
+  }
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Exercise 1: Process 2}
+\begin{lstlisting}[basicstyle=\fontsize{9}{11}\selectfont\ttfamily]
+class Process2 implements CSProcess {
+  private ChannelInput in1;
+  private ChannelInput in2;
+
+  public Process2(ChannelInput in1, ChannelInput in2) {
+    this.in1 = in1;
+    this.in2 = in2;
+  }
+
+  public void run() {
+    while (true) {
+      Integer d = (Integer) in2.read();
+      System.out.print("Read: " + d);
+
+      d = (Integer) in1.read();
+      System.out.println(" " + d);
+    }
+  }
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{Exercise 1: Hints}
+  \begin{itemize}
+  \item CSP provides synchronous communication
+  \item Synchronous communication implies that sender and receiver
+    must ``meet'' to exchange data
+    \begin{itemize}
+    \item[$\rightarrow$] if one of them does not reach the correct
+      communication operations, the other one waits for ever
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Exercise 1: Solution}
+  \begin{itemize}
+  \item Process 1:
+    \begin{enumerate}
+    \item Write on channel A
+    \item Write on channel B
+    \end{enumerate}
+  \item Process 2:
+    \begin{enumerate}
+    \item Read on channel B
+    \item Read on channel A
+    \end{enumerate}
+  \item[$\rightarrow$] Result: no progress!
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Exercise 2}
+  What is the output of the following JCSP program?
+
+  \vspace{\stretch{1}}
+
+\begin{lstlisting}[basicstyle=\fontsize{9}{11}\selectfont\ttfamily]
+import org.jcsp.lang.*;
+
+public class ClassroomExercise2 {
+  public static void main(String[] args) {
+    One2OneChannel chanA = Channel.one2one();
+    One2OneChannel chanB = Channel.one2one();
+
+    System.out.println("Start");
+    new Parallel(
+      new CSProcess[] { 
+        new ProcessA(chanA.out(), chanB.in()),
+        new ProcessB(chanB.out(), chanA.in()) 
+      }
+    ).run();
+    System.out.println("End");
+  }
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Exercise 2: Proccess A}
+\begin{lstlisting}[basicstyle=\fontsize{9}{11}\selectfont\ttfamily]
+class ProcessA implements CSProcess {
+  private ChannelOutput out1;
+  private ChannelInput in1;
+
+  public ProcessA(ChannelOutput out, ChannelInput in) {
+    this.out1 = out;
+    this.in1 = in;
+  }
+
+  public void run() {
+    for (int i = 1; i <= 5; i++) {
+      out1.write(new Integer(i));
+      System.out.println("Sent " + i);
+    }
+    for (int i = 1; i <= 5; i++) {
+      Integer d = (Integer) in1.read();
+      System.out.println("Read " + d.intValue());
+    }
+  }
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Exercise 2: Process B}
+\begin{lstlisting}[basicstyle=\fontsize{9}{11}\selectfont\ttfamily]
+class ProcessB implements CSProcess {
+  private ChannelInput in1;
+  private ChannelOutput out1;
+
+  public ProcessB(ChannelOutput out, ChannelInput in) {
+    this.in1 = in;
+    this.out1 = out;
+  }
+
+  public void run() {
+    for (int i = 1; i <= 5; i++) {
+      out1.write(new Integer(i));
+      System.out.println("Sent " + i);
+    }
+    for (int i = 1; i <= 5; i++) {
+      Integer d = (Integer) in1.read();
+      System.out.println("Read " + d.intValue());
+    }
+  }
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{Exercise 2: Solution}
+  \begin{itemize}
+  \item Process 1:
+    \begin{enumerate}
+    \item Write on channel A
+    \item Read on channel B
+    \end{enumerate}
+  \item Process 2:
+    \begin{enumerate}
+    \item Write on channel B
+    \item Read on channel A
+    \end{enumerate}
+  \item[$\rightarrow$] Result: no progress!
+  \end{itemize}
+\end{frame}
+
+
+\section{JCSP: MergeSort}
 
 \begin{frame}{Outline}
   \tableofcontents[current]
 \end{frame}
 
 \begin{frame}{TODO}
-  \begin{itemize}
-  \item TODO
-  \end{itemize}
+  TODO
 \end{frame}
 
 
-\section{New Assignment}
+\section{JCSP: Dining Philosophers}
 
 \begin{frame}{Outline}
   \tableofcontents[current]
 \end{frame}
 
-\begin{frame}{Foobar}
-  \begin{itemize}
-  \item TODO
-  \end{itemize}
+\begin{frame}{TODO}
+  TODO
+\end{frame}
+
+
+\section{Game of Life}
+
+\begin{frame}{Outline}
+  \tableofcontents[current]
+\end{frame}
+
+\begin{frame}{TODO}
+  TODO
 \end{frame}
 
 

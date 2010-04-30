@@ -92,41 +92,165 @@
 \end{frame}
 
 
-\section{Last Assignment}
+\section{Fairness}
 
 \begin{frame}{Outline}
   \tableofcontents[current]
 \end{frame}
 
-\begin{frame}{Solution}
-  \begin{itemize}
-  \item TODO
-  \end{itemize}
-\end{frame}
-
-
-\section{Foobar}
-
-\begin{frame}{Outline}
-  \tableofcontents[current]
-\end{frame}
-
-\begin{frame}{Foobar}
-  \begin{itemize}
-  \item TODO
-  \end{itemize}
-\end{frame}
-
-\begin{frame}[fragile]{Code}
-  \begin{lstlisting}
-class HelloWorld {
-
-  public static void main(String[] args) {
-    System.out.println("Hello, World!");
+\begin{frame}[fragile]{Monitors}
+\begin{lstlisting}
+public class Synchronizer {
+  public synchronized void doSynchronized() {
+    //do a lot of work which takes a long time
   }
-
 }
-  \end{lstlisting}
+\end{lstlisting}
+
+  \vspace{\stretch{1}}
+
+  \begin{alertblock}{No fairness!}
+    \begin{itemize}
+    \item If more than one thread call the
+      \lstinline!doSynchronized()!  method, some of them will be
+      blocked until the first thread granted access has left the
+      method
+    \item If more than one thread are blocked waiting for access there
+      is no guarantee about which thread is granted access next
+    \end{itemize}
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile]{\lstinline!wait()!}
+  \begin{itemize}
+  \item Causes the current thread to wait until another thread invokes
+    the \lstinline!notify()! method or the \lstinline!notifyAll()!
+    method for this object
+  \item A thread can also wake up without being notified, interrupted,
+    or timing out: \alert{spurious wakeup}
+  \item While this will rarely occur in practice, applications must
+    guard against it by testing for the condition that should have
+    caused the thread to be awakened, and continuing to wait if the
+    condition is not satisfied:
+\begin{lstlisting}
+  synchronized (obj) {
+    while (<condition does not hold>) {
+      obj.wait();
+    }
+    // continue
+  }
+\end{lstlisting} 
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{\lstinline!notify()!}
+  \begin{itemize}
+  \item Wakes up a single thread that is waiting on this object's
+    monitor
+  \item If any threads are waiting on this object, one of them is
+    chosen to be awakened
+  \item The \alert{choice is arbitrary} and occurs at the discretion
+    of the implementation
+  \item The awakened thread will not be able to proceed until the
+    current thread frees the lock on this object
+  \item The awakened thread will compete in the usual manner with any
+    other threads that might be actively competing to synchronize on
+    this object
+    \begin{itemize}
+    \item[$\Rightarrow$] Enjoys no reliable privilege or disadvantage
+      in being the next thread to lock this object
+    \end{itemize}  
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{\lstinline!notifyAll()!}
+  \begin{itemize}
+  \item Wakes up all threads that are waiting on this object's
+    monitor
+  \item The awakened threads will not be able to proceed until the
+    current thread frees the lock on this object
+  \item The awakened threads will compete in the usual manner with any
+    other threads that might be actively competing to synchronize on
+    this object
+    \begin{itemize}
+    \item[$\Rightarrow$] Enjoys no reliable privilege or disadvantage
+      in being the next thread to lock this object
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Semaphore}
+  \begin{itemize}
+  \item \lstinline!java.util.concurrent.Semaphore!
+    \begin{itemize}
+    \item \lstinline!acquire()! instead of \lstinline!P()!
+    \item \lstinline!release()! instead of \lstinline!V()!
+    \end{itemize}
+  \item Constructors
+    \begin{itemize}
+    \item \lstinline!Semaphore(int permits)!
+    \item \lstinline!Semaphore(int permits, boolean fair)!
+      \begin{itemize}
+      \item \lstinline!permits!: initial value
+      \item \lstinline!fair!: if true then the semphore uses a FIFO to
+        manage blocked threads
+      \end{itemize}
+    \end{itemize}
+  \item When fairness is set \lstinline!true!, the semaphore
+    guarantees that threads invoking any of the \lstinline!acquire!
+    methods are selected to obtain permits in the order in which their
+    invocation of those methods was processed (first-in-first-out;
+    FIFO)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Lock}
+  \begin{itemize}
+  \item \lstinline!java.util.concurrent.locks.ReentrantLock!
+  \item \lstinline!ReentrantLock(boolean fair)!: if this lock should
+    use a fair ordering policy
+  \item When set true, under contention, locks favor granting access
+    to the longest-waiting thread
+  \item Programs using fair locks accessed by many threads may display
+    lower overall throughput than those using the default setting, but
+    have smaller variances in times to obtain locks and guarantee lack
+    of starvation
+  \item Fairness of locks does not guarantee fairness of thread
+    scheduling
+  \item See \url{http://java.sun.com/javase/6/docs/api/}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Using Locks}
+  \begin{lstlisting}
+class Foo {
+  private final ReentrantLock lock = 
+    new ReentrantLock();
+
+  public void bar() {
+    // block until condition holds
+    lock.lock();
+    try {
+      // method body
+    } finally {
+      lock.unlock()
+    }
+  }
+}
+\end{lstlisting}
+\end{frame}
+
+
+\section{JSCP}
+
+\begin{frame}{Outline}
+  \tableofcontents[current]
+\end{frame}
+
+\begin{frame}{TODO}
+  \begin{itemize}
+  \item TODO
+  \end{itemize}
 \end{frame}
 
 

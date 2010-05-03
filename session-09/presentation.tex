@@ -462,14 +462,162 @@ class ProcessB implements CSProcess {
 \end{frame}
 
 
+\section{Swing}
+
+\begin{frame}{Outline}
+  \tableofcontents[current]
+\end{frame}
+
+\begin{frame}{Swing}
+  \begin{columns}[c]
+    \begin{column}{0.55\textwidth}
+      \begin{itemize}
+      \item Swing is a platform-independent, Model-View-Controller GUI
+        framework for Java
+      \item Provides a native look and feel that emulates the look and
+        feel of several platforms
+      \item Supports a pluggable look and feel that allows applications to
+        have a look and feel unrelated to the underlying platform
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+      \begin{center}
+        \includegraphics[width=\textwidth]{figures/do-not-swing}
+      \end{center}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Hello, Swing!}
+\begin{lstlisting}[basicstyle=\fontsize{7}{9}\selectfont\ttfamily]
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+public class HelloWorld {
+  public static void main(String[] args) {
+    final JFrame f = new JFrame("Hello, World!");
+    JPanel p = new JPanel();
+    FlowLayout L = new FlowLayout();
+
+    JButton button = new JButton("Goodbye, World!");
+    button.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        f.dispose();
+      }
+    });
+
+    p.setLayout(L); p.add(button);
+    f.setContentPane(p);
+    f.setLocationRelativeTo(f.getRootPane());
+    f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    f.pack(); f.setVisible(true);
+  }
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{Model-View-Controller}
+  \begin{description}
+  \item[Model:] Domain-specific representation of the data upon which
+    the application operates, when a model changes its state, it
+    notifies its associated views so they can be refreshed
+  \item[View:] Renders the model into a form suitable for interaction,
+    typically a user interface element, multiple views can exist for a
+    single model for different purposes
+  \item[Controller:] Receives input and initiates a response by making
+    calls on model objects
+  \end{description}
+\end{frame}
+
+\begin{frame}{Model-View-Controller: Sun}
+  \begin{center}
+    \includegraphics[scale=0.4]{figures/mvc} \\
+    \tiny{Source: \url{http://java.sun.com/blueprints/patterns/MVC-detailed.html}}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Model-View-Controller: Ruby on Rails}
+  \begin{center}
+    \includegraphics[scale=0.4]{figures/mvc-rails} \\
+    \tiny{Source: \url{http://betterexplained.com/articles/intermediate-rails}}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Tutorials}
+  \begin{itemize}
+  \item Creating a GUI With JFC/Swing:\\
+    \url{http://java.sun.com/docs/books/tutorial/uiswing/}
+  \item Using Swing Components:\\
+    \url{http://java.sun.com/docs/books/tutorial/uiswing/components/index.html}
+  \item Ein (sehr) kleines Swing Tutorial:\\
+    \url{http://www.mm.informatik.tu-darmstadt.de/courses/helpdesk/swing.html}
+  \end{itemize}
+\end{frame}
+
+
 \section{Game of Life}
 
 \begin{frame}{Outline}
   \tableofcontents[current]
 \end{frame}
 
-\begin{frame}{TODO}
-  TODO
+\begin{frame}{Conway's Game of Life}
+  \begin{columns}[c]
+    \begin{column}{0.45\textwidth}
+      \begin{itemize}
+      \item Implement ``Game of Life'' with GUI based on Swing
+      \item Model-View-Controller Pattern
+      \item You can use the given code skeleton
+      \item Let's see an example
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.55\textwidth}
+      \begin{center}
+        \includegraphics[width=\textwidth]{figures/gol}
+      \end{center}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Universe}
+  \begin{itemize}
+  \item The universe of the Game of Life is an infinite
+    two-dimensional orthogonal grid of square cells
+    \begin{itemize}
+    \item Our implementation uses a finite grid
+    \end{itemize}
+  \item Each cell is in one of two possible states:
+    \begin{itemize}
+    \item live
+    \item dead
+    \end{itemize}
+  \item Every cell interacts with its eight neighbors, which are the
+    cells that are directly
+    \begin{itemize}
+    \item horizontally
+    \item vertically
+    \item diagonally
+    \end{itemize}
+    adjacent
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Rules}
+  At each step in time, the following transitions occur:
+
+  \vspace{\stretch{1}}
+
+  \begin{enumerate}
+  \item Any live cell with fewer than two live neighbours dies, as if
+    caused by underpopulation
+  \item Any live cell with more than three live neighbours dies, as if
+    by overcrowding
+  \item Any live cell with two or three live neighbours lives on to
+    the next generation
+  \item Any dead cell with exactly three live neighbours becomes a
+    live cell
+  \end{enumerate}  
 \end{frame}
 
 

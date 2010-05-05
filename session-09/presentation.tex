@@ -87,7 +87,14 @@
 
 \begin{frame}{Executive Summary}
   \begin{itemize}
-  \item TODO
+  \item Lack of fairness when using monitors
+    \begin{itemize}
+    \item Alternatives when we have to guarantee fairness
+    \end{itemize}
+  \item JCSP: Classroom exercises
+  \item MergeSort implementation using JCSP
+  \item Swing and the Model-View-Controller pattern
+  \item Conway's Game of Life
   \end{itemize}
 \end{frame}
 
@@ -652,37 +659,139 @@ public class DummyReceiverProcess implements CSProcess {
   \end{columns}
 \end{frame}
 
-\begin{frame}[fragile]{Hello, Swing!}
+\begin{frame}[fragile]{Example: \lstinline{SimpleButton} (Initialization)}
 \begin{lstlisting}[basicstyle=\fontsize{7}{9}\selectfont\ttfamily]
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+public class SimpleButton extends JPanel implements ActionListener {
+  private final JButton computationButton, updateButton;
+  private JTextField display;
+  private final Counter counter = new Counter();
 
-public class HelloWorld {
+  private static void createAndShowGUI() {
+    // Create and set up the window.
+    JFrame frame = new JFrame("Simple Button with Action Listener");
+    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+    // Create and set up the content pane.
+    SimpleButton newContentPane = new SimpleButton();
+    newContentPane.setOpaque(true); // content panes must be opaque
+    frame.setContentPane(newContentPane);
+
+    // Display the window.
+    frame.pack(); frame.setVisible(true);
+  }
+
   public static void main(String[] args) {
-    final JFrame f = new JFrame("Hello, World!");
-    JPanel p = new JPanel();
-    FlowLayout L = new FlowLayout();
-
-    JButton button = new JButton("Goodbye, World!");
-    button.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        f.dispose();
-      }
+    SwingUtilities.invokeLater(new Runnable() {
+      public void run() { createAndShowGUI(); }
     });
+  }
+\end{lstlisting}
+\end{frame}
 
-    p.setLayout(L); p.add(button);
-    f.setContentPane(p);
-    f.setLocationRelativeTo(f.getRootPane());
-    f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    f.pack(); f.setVisible(true);
+\begin{frame}[fragile]{Example: \lstinline{SimpleButton} (Constructor)}
+\begin{lstlisting}[basicstyle=\fontsize{7}{9}\selectfont\ttfamily]
+  public SimpleButton() {
+    computationButton = new JButton("Start computation");
+    computationButton.addActionListener(this);
+    computationButton.setActionCommand("compute");
+
+    updateButton = new JButton("Update result");
+    updateButton.addActionListener(this);
+    updateButton.setActionCommand("update");
+
+    display = new JTextField(20);
+    display.setText(Integer.toString(0));
+    display.setEditable(false);
+
+    // Add Components to this container, using the default FlowLayout.
+    add(computationButton);
+    add(updateButton);
+    add(display);
+  }
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Example: \lstinline{SimpleButton} (Action)}
+\begin{lstlisting}[basicstyle=\fontsize{7}{9}\selectfont\ttfamily]
+  /**
+   * Starting the action triggers the computation
+   */
+  public void actionPerformed(ActionEvent e) {
+    if ("compute".equals(e.getActionCommand())) {
+      Thread[] t = new Thread[3];
+
+      for (int i = 0; i < t.length; i++) {
+        t[i] = new Thread(new ComputeTask(counter));
+        t[i].start();
+      }
+    } else {
+      // update command
+      final int numActiveTasks = ComputeTask.getNumActiveTasks();
+      if (numActiveTasks > 0) {
+        display.setText(numActiveTasks
+            + " are not finished, please wait");
+      } else {
+        display.setText(Integer.toString(counter.getValue()));
+      }
+    }
   }
 }
 \end{lstlisting}
 \end{frame}
 
-\begin{frame}[fragile]{Multiple Threads}
-  TODO
+\begin{frame}[fragile]{Example: \lstinline{ComputeTask}}
+\begin{lstlisting}[basicstyle=\fontsize{7}{9}\selectfont\ttfamily]
+public class ComputeTask implements Runnable {
+  private final Counter counter;
+  private static int numActiveTasks = 0;
+
+  public ComputeTask(Counter c) {
+    this.counter = c;
+  }
+
+  public void run() {
+    incrementNumActiveTasks();
+    // sleep for a random time
+    try {
+      Thread.sleep((long) (Math.random() * 5000));
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+    counter.increment();
+    decrementNumActiveTasks();
+  }
+
+  // synchronized methods incrementNumActiveTasks, 
+  // decrementNumActiveTasks, getNumActiveTasks
+  // omitted...
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Example: \lstinline{Counter}}
+\begin{lstlisting}[basicstyle=\fontsize{7}{9}\selectfont\ttfamily]
+public class Counter {
+  private int val = 0;
+  
+  synchronized void increment() {
+    val++;
+  }
+  
+  synchronized int getValue() {
+    return val;
+  }
+}
+\end{lstlisting}
+
+  \vspace{\stretch{1}}
+
+  Alternative to writing your own thread-safe wrapper classes:
+  \lstinline!AtomicInteger! (\url{http://java.sun.com/javase/6/docs/api/})
+  \begin{itemize}
+  \item \lstinline!incrementAndGet()!
+  \item \lstinline!decrementAndGet()!
+  \item \lstinline!get()!
+  \end{itemize}
 \end{frame}
 
 \begin{frame}{Model-View-Controller}
@@ -797,7 +906,21 @@ public class HelloWorld {
 
 \begin{frame}{Summary}
   \begin{itemize}
-  \item TODO
+  \item Monitors don't provide any fairness
+    \begin{itemize}
+    \item Could use \lstinline!Semaphore(int permits, boolean fair)!
+      for example
+    \end{itemize}
+  \item CSP provides synchronous communication
+    \begin{itemize}
+    \item Synchronous communication implies that sender and receiver
+      must ``meet'' to exchange data $\rightarrow$ if one of them does
+      not reach the correct communication operations, the other one
+      waits for ever
+    \end{itemize}
+  \item MergeSort implementation using JCSP
+  \item Try to separate Swing related code from your model
+  \item Conway's Game of Life
   \end{itemize}
 \end{frame}
 

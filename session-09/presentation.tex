@@ -1062,23 +1062,22 @@ public class Counter {
 \section*{Outro}
 
 \begin{frame}{Summary}
-  \begin{itemize}
-  \item Monitors don't provide any fairness
-    \begin{itemize}
-    \item Could use \lstinline!Semaphore(int permits, boolean fair)!
-      for example
-    \end{itemize}
-  \item CSP provides synchronous communication
-    \begin{itemize}
-    \item Synchronous communication implies that sender and receiver
-      must ``meet'' to exchange data $\rightarrow$ if one of them does
-      not reach the correct communication operations, the other one
-      waits for ever
-    \end{itemize}
-  \item MergeSort implementation using JCSP
-  \item Try to separate Swing related code from your model
-  \item Conway's Game of Life
-  \end{itemize}
+  \begin{columns}[c]
+    \begin{column}{0.5\textwidth}
+      \begin{itemize}
+      \item Monitors don't provide any fairness
+      \item CSP provides synchronous communication
+      \item MergeSort implementation using JCSP
+      \item Try to separate Swing related code from your model
+      \item Conway's Game of Life
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+        \includegraphics[width=\textwidth]{figures/homework}
+      \end{center}
+    \end{column}
+  \end{columns}
 \end{frame}
 
 \end{document}

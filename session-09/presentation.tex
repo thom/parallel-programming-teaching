@@ -96,6 +96,12 @@
   \item Swing and the Model-View-Controller pattern
   \item Conway's Game of Life
   \end{itemize}
+
+  \vspace{\stretch{1}}
+
+  \begin{center}
+    \includegraphics[scale=0.4]{figures/dilbert}
+  \end{center}
 \end{frame}
 
 
@@ -542,7 +548,7 @@ class Consumer implements Runnable {
 \end{frame}
 
 \begin{frame}[fragile]{Exercise 3: Solution -- Setup}
-\begin{lstlisting}
+\begin{lstlisting}[basicstyle=\fontsize{9}{11}\selectfont\ttfamily]
 import org.jcsp.lang.*;
 
 public class SimpleJCSP {
@@ -562,7 +568,7 @@ public class SimpleJCSP {
 \end{frame}
 
 \begin{frame}[fragile]{Exercise 3: Solution -- Producer}
-\begin{lstlisting}
+\begin{lstlisting}[basicstyle=\fontsize{9}{11}\selectfont\ttfamily]
 class CSPProducer implements CSProcess {
   private ChannelOutput out;
 
@@ -582,7 +588,7 @@ class CSPProducer implements CSProcess {
 \end{frame}
 
 \begin{frame}[fragile]{Exercise 3: Solution -- Consumer}
-\begin{lstlisting}
+\begin{lstlisting}[basicstyle=\fontsize{9}{11}\selectfont\ttfamily]
 class CSPConsumer implements CSProcess {
   private ChannelInput in;
 

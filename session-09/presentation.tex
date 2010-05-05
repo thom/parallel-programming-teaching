@@ -446,8 +446,221 @@ class ProcessB implements CSProcess {
   \tableofcontents[current]
 \end{frame}
 
-\begin{frame}{TODO}
-  TODO
+\begin{frame}{Entities Layout}
+  \includegraphics[width=\textwidth]{figures/mergesort}
+\end{frame}
+
+\begin{frame}[fragile]{MergeSort}
+\begin{lstlisting}[basicstyle=\fontsize{7}{9}\selectfont\ttfamily]
+public class MergeSort {
+  // ...
+
+  public static void main(String[] args) {
+    // create extra receiver process for the final merging process
+    One2OneChannel collectingChannel = Channel.one2one();
+    DummyReceiverProcess dummyReceiverProcess = new DummyReceiverProcess(
+        collectingChannel.in());
+
+    // create thread hierarchy, connecting it to the extra receiver
+    divide(1000, 32, collectingChannel.out());
+
+    // put all JCSP processes in an array
+    CSProcess[] allProcesses = new CSProcess[sortIndex + mergeIndex + 1];
+
+    // Create sorting and merging processes including the extra 
+    // receiver and put them into the array
+    // ...
+
+    Parallel parallel = new Parallel(allProcesses);
+    parallel.run();
+  }
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{\lstinline!divide()!}
+\begin{lstlisting}[basicstyle=\fontsize{7}{9}\selectfont\ttfamily]
+// recursively create sorting/merging processes and the interconnecting
+// channels
+private static void divide(int size, int noThreads, ChannelOutput out) {
+  if (noThreads == 0) {
+    SortingProcess sortingProcess = new SortingProcess(
+        size, out);
+    sortingProcesses.add(sortingProcess);
+    sortIndex++;
+  } else if (size >= 1) {
+    One2OneChannel channel0 = Channel.one2one();
+    One2OneChannel channel1 = Channel.one2one();
+    MergingProcess mergingProcess = new MergingProcess(
+        channel0.in(), channel1.in(), out);
+    mergingProcesses.add(mergingProcess);
+    mergeIndex++;
+
+    int noThreadsLeft = noThreads - 1;
+
+    divide(size / 2, noThreadsLeft / 2, channel0.out());
+    divide(size - size / 2, noThreadsLeft - noThreadsLeft / 2, 
+        channel1.out());
+  }
+}
+\end{lstlisting}  
+\end{frame}
+
+\begin{frame}[fragile]{Sorting Process}
+\begin{lstlisting}[basicstyle=\fontsize{7}{9}\selectfont\ttfamily]
+public class SortingProcess implements CSProcess {
+  private int[] chunk;
+  private int chunkLength;
+  private ChannelOutput next;
+
+  public SortingProcess(int chunkLength, ChannelOutput next) { /* ... */ }
+
+  public void run() {
+    chunk = new int[chunkLength];
+    Random r = new Random();
+    for (int i = 0; i < chunkLength; i++)
+      chunk[i] = r.nextInt(100);
+
+    // sort chunk
+    Arrays.sort(chunk);
+
+    // write chunk size on output channel
+    next.write(new Integer(chunkLength));
+    // write chunk data, one by one, into output channel
+    for (int i = 0; i < chunkLength; i++)
+      next.write(new Integer(chunk[i]));
+  }
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Merging Process}
+\begin{lstlisting}[basicstyle=\fontsize{7}{9}\selectfont\ttfamily]
+public class MergingProcess implements CSProcess {
+  private int[] chunk0, chunk1;
+  private int index0 = -1, index1 = -1;
+  private int[] sortedChunk;
+  private String name;
+  private AltingChannelInput prev0, prev1;
+  private ChannelOutput next;
+  private int value;
+
+  public MergingProcess(String name, AltingChannelInput prev0,
+      AltingChannelInput prev1, ChannelOutput next) {
+    this.prev0 = prev0;
+    this.prev1 = prev1;
+    this.next = next;
+    this.name = name;
+  }
+
+  public void run() {
+    // initialize alternative, for improved time efficiency
+    Guard[] guards = { prev0, prev1 };
+    Alternative alt = new Alternative(guards);
+
+    while (true) {
+      switch (alt.priSelect()) {
+
+      // read from first input channel
+      case 0:
+        value = (Integer) prev0.read();
+        // this is the first integer read, i.e., the chunk size
+        if (index0 == -1)
+          chunk0 = new int[value];
+        else
+          // this is not the first integer read, i.e., it is a piece
+          // of actual data
+          chunk0[index0] = value;
+
+        index0++;
+        break;
+
+      // read from second input channel, idem
+      case 1:
+        value = (Integer) prev1.read();
+
+        if (index1 == -1)
+          chunk1 = new int[value];
+        else
+          chunk1[index1] = value;
+
+        index1++;
+        break;
+      }
+
+      // polling is finished if both chunks exist (first 2 AND operands)
+      // and are filled completely (last 2 operands)
+      if (index0 > -1 && index1 > -1 && index0 == chunk0.length
+          && index1 == chunk1.length)
+        break;
+    }
+
+    // final sorted chunk initialization
+    sortedChunk = new int[chunk0.length + chunk1.length];
+
+    // merge the two sorted chunks
+    int i = 0, j = 0, k = 0;
+
+    while (i < chunk0.length && j < chunk1.length) {
+      if (chunk0[i] < chunk1[j]) {
+        sortedChunk[k] = chunk0[i];
+        i++;
+      } else {
+        sortedChunk[k] = chunk1[j];
+        j++;
+      }
+      k++;
+    }
+
+    if (i == chunk0.length)
+      for (int jj = j; jj < chunk1.length; jj++) {
+        sortedChunk[k] = chunk1[jj];
+        k++;
+      }
+    else
+      for (int ii = i; ii < chunk0.length; ii++) {
+        sortedChunk[k] = chunk0[ii];
+        k++;
+      }
+
+    // write final sorted chunk size on output channel
+    next.write(sortedChunk.length);
+
+    // write final sorted chunk data, one by one, into output channel
+    for (i = 0; i < sortedChunk.length; i++)
+      next.write(new Integer(sortedChunk[i]));
+  }
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Dummy Receiver Process}
+\begin{lstlisting}[basicstyle=\fontsize{7}{9}\selectfont\ttfamily]
+public class DummyReceiverProcess implements CSProcess {
+  private ChannelInput prev;
+  private int[] x;
+
+  public DummyReceiverProcess(ChannelInput prev) { /* ... */ }
+
+  public void run() {
+    // read length of final, hopefully sorted, array
+    int length = (Integer) prev.read();
+    x = new int[length];
+    // read final, hopefully sorted, array
+    for (int i = 0; i < length; i++)
+      x[i] = (Integer) prev.read();
+
+    // check if the array is really sorted and print out result
+    boolean isSorted = true;
+    for (int i = 0; i < length - 1; i++)
+      if (x[i] > x[i + 1]) {
+        isSorted = false;
+        break;
+      }
+    System.out.println("Succes = " + isSorted);
+  }
+}
+\end{lstlisting}
 \end{frame}
 
 

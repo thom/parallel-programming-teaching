@@ -255,10 +255,6 @@ class Foo {
 \end{frame}
 
 \begin{frame}[fragile]{Exercise 1}
-  TODO: PingPong (synchronized -> rewrite with channels)
-\end{frame}
-
-\begin{frame}[fragile]{Exercise 2}
   What is the output of the following JCSP program?
 
   \vspace{\stretch{1}}
@@ -284,7 +280,7 @@ public class ClassroomExercise1 {
 \end{lstlisting}
 \end{frame}
 
-\begin{frame}[fragile]{Exercise 2: Proccess 1}
+\begin{frame}[fragile]{Exercise 1: Proccess 1}
 \begin{lstlisting}[basicstyle=\fontsize{9}{11}\selectfont\ttfamily]
 class Process1 implements CSProcess {
   private ChannelOutput out1;
@@ -306,7 +302,7 @@ class Process1 implements CSProcess {
 \end{lstlisting}
 \end{frame}
 
-\begin{frame}[fragile]{Exercise 2: Process 2}
+\begin{frame}[fragile]{Exercise 1: Process 2}
 \begin{lstlisting}[basicstyle=\fontsize{9}{11}\selectfont\ttfamily]
 class Process2 implements CSProcess {
   private ChannelInput in1;
@@ -330,7 +326,7 @@ class Process2 implements CSProcess {
 \end{lstlisting}
 \end{frame}
 
-\begin{frame}{Exercise 2: Hints}
+\begin{frame}{Exercise 1: Hints}
   \begin{itemize}
   \item CSP provides synchronous communication
   \item Synchronous communication implies that sender and receiver
@@ -342,7 +338,7 @@ class Process2 implements CSProcess {
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Exercise 2: Solution}
+\begin{frame}{Exercise 1: Solution}
   \begin{itemize}
   \item Process 1:
     \begin{enumerate}
@@ -358,7 +354,7 @@ class Process2 implements CSProcess {
   \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]{Exercise 3}
+\begin{frame}[fragile]{Exercise 2}
   What is the output of the following JCSP program?
 
   \vspace{\stretch{1}}
@@ -384,7 +380,7 @@ public class ClassroomExercise2 {
 \end{lstlisting}
 \end{frame}
 
-\begin{frame}[fragile]{Exercise 3: Proccess A}
+\begin{frame}[fragile]{Exercise 2: Proccess A}
 \begin{lstlisting}[basicstyle=\fontsize{9}{11}\selectfont\ttfamily]
 class ProcessA implements CSProcess {
   private ChannelOutput out1;
@@ -409,7 +405,7 @@ class ProcessA implements CSProcess {
 \end{lstlisting}
 \end{frame}
 
-\begin{frame}[fragile]{Exercise 3: Process B}
+\begin{frame}[fragile]{Exercise 2: Process B}
 \begin{lstlisting}[basicstyle=\fontsize{9}{11}\selectfont\ttfamily]
 class ProcessB implements CSProcess {
   private ChannelInput in1;
@@ -434,7 +430,7 @@ class ProcessB implements CSProcess {
 \end{lstlisting}
 \end{frame}
 
-\begin{frame}{Exercise 3: Solution}
+\begin{frame}{Exercise 2: Solution}
   \begin{itemize}
   \item Process 1:
     \begin{enumerate}
@@ -448,6 +444,161 @@ class ProcessB implements CSProcess {
     \end{enumerate}
   \item[$\rightarrow$] Result: no progress!
   \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Exercise 3}
+  Rewrite the following program using channels with JCSP
+
+  \vspace{\stretch{1}}
+
+\begin{lstlisting}[basicstyle=\fontsize{9}{11}\selectfont\ttfamily]
+public class SimpleSharedObject {
+  public static void main(String[] args) {
+    Buffer b = new Buffer();
+
+    Thread t1 = new Thread(new Producer(b));
+    Thread t2 = new Thread(new Consumer(b));
+    t1.start();
+    t2.start();
+    try {
+      t1.join();
+      t2.join();
+    } catch (InterruptedException E) {
+    }
+
+    System.out.println("Driver finished");
+  }
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Exercise 3: Buffer}
+\begin{lstlisting}[basicstyle=\fontsize{7}{9}\selectfont\ttfamily]
+class Buffer {
+  Integer data; boolean full = false;
+
+  synchronized void put(Integer i) {
+    while (true) {
+      try {
+        if (full)
+          wait();
+        data = i; full = true; notifyAll(); break;
+      } catch (InterruptedException e) {}
+    }
+  }
+  synchronized Integer get() {
+    Integer tmp;
+    while (true) {
+      try {
+        if (!full)
+          wait();
+        tmp = this.data; full = false; notifyAll(); break;
+      } catch (InterruptedException e) {}
+    }
+    return tmp;
+  }
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Exercise 3: Producer}
+\begin{lstlisting}[basicstyle=\fontsize{9}{11}\selectfont\ttfamily]
+class Producer implements Runnable {
+  Buffer b;
+
+  public Producer(Buffer b) {
+    this.b = b;
+  }
+
+  public void run() {
+    for (int i = 0; i < 10; i++) {
+      System.out.println("Write: " + i);
+      b.put(new Integer(i));
+    }
+    System.out.println("Producer finished");
+  }
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Exercise 3: Consumer}
+\begin{lstlisting}[basicstyle=\fontsize{9}{11}\selectfont\ttfamily]
+class Consumer implements Runnable {
+  Buffer b;
+
+  public Consumer(Buffer b) {
+    this.b = b;
+  }
+
+  public void run() {
+    for (int i = 0; i < 10; i++) {
+      Integer d = b.get();
+      System.out.println("Read: " + d.intValue());
+    }
+    System.out.println("Consumer finished");
+  }
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Exercise 3: Solution -- Setup}
+\begin{lstlisting}
+import org.jcsp.lang.*;
+
+public class SimpleJCSP {
+  public static void main(String[] args) {
+    One2OneChannel chan = Channel.one2one();
+
+    new Parallel(
+      new CSProcess[] { 
+        new CSPProducer(chan.out()),
+        new CSPConsumer(chan.in()) 
+      }
+    ).run();
+    System.out.println("Driver finished");
+  }
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Exercise 3: Solution -- Producer}
+\begin{lstlisting}
+class CSPProducer implements CSProcess {
+  private ChannelOutput out;
+
+  public CSPProducer(ChannelOutput out) {
+    this.out = out;
+  }
+
+  public void run() {
+    for (int i = 0; i < 10; i++) {
+      System.out.println("Write: " + i);
+      out.write(new Integer(i));
+    }
+    System.out.println("Producer finished");
+  }
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Exercise 3: Solution -- Consumer}
+\begin{lstlisting}
+class CSPConsumer implements CSProcess {
+  private ChannelInput in;
+
+  public CSPConsumer(ChannelInput in) {
+    this.in = in;
+  }
+
+  public void run() {
+    for (int i = 0; i < 10; i++) {
+      Integer d = (Integer) in.read();
+      System.out.println("Read: " + d.intValue());
+    }
+    System.out.println("Consumer finished");
+  }
+}
+\end{lstlisting}
 \end{frame}
 
 

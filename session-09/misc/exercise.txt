@@ -57,6 +57,7 @@ Exercise 2
 ==========
 
 import org.jcsp.lang.*;
+
 public class ClassroomExercise2 {
   public static void main(String[] args) {
     One2OneChannel chanA = Channel.one2one();
@@ -106,5 +107,92 @@ class ProcessB implements CSProcess {
       Integer d = (Integer) in1.read();
       System.out.println("Read " + d.intValue());
     }
+  }
+}
+
+
+Exercise 3
+==========
+
+public class SimpleSharedObject {
+  public static void main(String[] args) {
+    Buffer b = new Buffer();
+
+    Thread t1 = new Thread(new Producer(b));
+    Thread t2 = new Thread(new Consumer(b));
+    t1.start();
+    t2.start();
+    try {
+      t1.join();
+      t2.join();
+    } catch (InterruptedException E) {
+    }
+
+    System.out.println("Driver finished");
+  }
+}
+
+class Buffer {
+  Integer data; 
+  boolean full = false;
+
+  synchronized void put(Integer i) {
+    while (true) {
+      try {
+        if (full)
+          wait();
+        data = i; 
+        full = true; 
+        notifyAll(); 
+        break;
+      } catch (InterruptedException e) {}
+    }
+  }
+
+  synchronized Integer get() {
+    Integer tmp;
+    while (true) {
+      try {
+        if (!full)
+          wait();
+        tmp = this.data; 
+        full = false; 
+        notifyAll(); 
+        break;
+      } catch (InterruptedException e) {}
+    }
+    return tmp;
+  }
+}
+
+class Producer implements Runnable {
+  Buffer b;
+
+  public Producer(Buffer b) {
+    this.b = b;
+  }
+
+  public void run() {
+    for (int i = 0; i < 10; i++) {
+      System.out.println("Write: " + i);
+      b.put(new Integer(i));
+    }
+    System.out.println("Producer finished");
+  }
+}
+
+class Consumer implements Runnable {
+  Buffer b;
+
+  public Consumer(Buffer b) {
+    this.b = b;
+  }
+
+  public void run() {
+    for (int i = 0; i < 10; i++) {
+      Integer d = b.get();
+      System.out.println("Read: " + d.intValue());
+    }
+    System.out.println("Consumer finished");
   }
 }

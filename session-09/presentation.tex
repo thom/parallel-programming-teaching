@@ -248,6 +248,10 @@ class Foo {
 \end{frame}
 
 \begin{frame}[fragile]{Exercise 1}
+  TODO: PingPong (synchronized -> rewrite with channels)
+\end{frame}
+
+\begin{frame}[fragile]{Exercise 2}
   What is the output of the following JCSP program?
 
   \vspace{\stretch{1}}
@@ -273,7 +277,7 @@ public class ClassroomExercise1 {
 \end{lstlisting}
 \end{frame}
 
-\begin{frame}[fragile]{Exercise 1: Proccess 1}
+\begin{frame}[fragile]{Exercise 2: Proccess 1}
 \begin{lstlisting}[basicstyle=\fontsize{9}{11}\selectfont\ttfamily]
 class Process1 implements CSProcess {
   private ChannelOutput out1;
@@ -295,7 +299,7 @@ class Process1 implements CSProcess {
 \end{lstlisting}
 \end{frame}
 
-\begin{frame}[fragile]{Exercise 1: Process 2}
+\begin{frame}[fragile]{Exercise 2: Process 2}
 \begin{lstlisting}[basicstyle=\fontsize{9}{11}\selectfont\ttfamily]
 class Process2 implements CSProcess {
   private ChannelInput in1;
@@ -319,7 +323,7 @@ class Process2 implements CSProcess {
 \end{lstlisting}
 \end{frame}
 
-\begin{frame}{Exercise 1: Hints}
+\begin{frame}{Exercise 2: Hints}
   \begin{itemize}
   \item CSP provides synchronous communication
   \item Synchronous communication implies that sender and receiver
@@ -331,7 +335,7 @@ class Process2 implements CSProcess {
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Exercise 1: Solution}
+\begin{frame}{Exercise 2: Solution}
   \begin{itemize}
   \item Process 1:
     \begin{enumerate}
@@ -347,7 +351,7 @@ class Process2 implements CSProcess {
   \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]{Exercise 2}
+\begin{frame}[fragile]{Exercise 3}
   What is the output of the following JCSP program?
 
   \vspace{\stretch{1}}
@@ -373,7 +377,7 @@ public class ClassroomExercise2 {
 \end{lstlisting}
 \end{frame}
 
-\begin{frame}[fragile]{Exercise 2: Proccess A}
+\begin{frame}[fragile]{Exercise 3: Proccess A}
 \begin{lstlisting}[basicstyle=\fontsize{9}{11}\selectfont\ttfamily]
 class ProcessA implements CSProcess {
   private ChannelOutput out1;
@@ -398,7 +402,7 @@ class ProcessA implements CSProcess {
 \end{lstlisting}
 \end{frame}
 
-\begin{frame}[fragile]{Exercise 2: Process B}
+\begin{frame}[fragile]{Exercise 3: Process B}
 \begin{lstlisting}[basicstyle=\fontsize{9}{11}\selectfont\ttfamily]
 class ProcessB implements CSProcess {
   private ChannelInput in1;
@@ -423,7 +427,7 @@ class ProcessB implements CSProcess {
 \end{lstlisting}
 \end{frame}
 
-\begin{frame}{Exercise 2: Solution}
+\begin{frame}{Exercise 3: Solution}
   \begin{itemize}
   \item Process 1:
     \begin{enumerate}
@@ -622,17 +626,6 @@ public class DummyReceiverProcess implements CSProcess {
 \end{frame}
 
 
-\section{JCSP: Dining Philosophers}
-
-\begin{frame}{Outline}
-  \tableofcontents[current]
-\end{frame}
-
-\begin{frame}{TODO}
-  TODO
-\end{frame}
-
-
 \section{Swing}
 
 \begin{frame}{Outline}
@@ -686,6 +679,10 @@ public class HelloWorld {
   }
 }
 \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Multiple Threads}
+  TODO
 \end{frame}
 
 \begin{frame}{Model-View-Controller}
@@ -749,6 +746,10 @@ public class HelloWorld {
       \end{center}
     \end{column}
   \end{columns}
+
+  \vspace{\stretch{1}}
+
+  See \url{http://en.wikipedia.org/wiki/Conway's_Game_of_Life}
 \end{frame}
 
 \begin{frame}{Universe}

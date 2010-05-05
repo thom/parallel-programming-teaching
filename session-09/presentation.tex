@@ -537,96 +537,54 @@ public class SortingProcess implements CSProcess {
 \begin{frame}[fragile]{Merging Process}
 \begin{lstlisting}[basicstyle=\fontsize{7}{9}\selectfont\ttfamily]
 public class MergingProcess implements CSProcess {
-  private int[] chunk0, chunk1;
-  private int index0 = -1, index1 = -1;
-  private int[] sortedChunk;
-  private String name;
+  private int[] chunk0, chunk1, sortedChunk;
+  private int index0 = -1, index1 = -1, value;
   private AltingChannelInput prev0, prev1;
   private ChannelOutput next;
-  private int value;
 
-  public MergingProcess(String name, AltingChannelInput prev0,
-      AltingChannelInput prev1, ChannelOutput next) {
-    this.prev0 = prev0;
-    this.prev1 = prev1;
-    this.next = next;
-    this.name = name;
-  }
+  public MergingProcess(AltingChannelInput prev0,
+      AltingChannelInput prev1, ChannelOutput next) { /* ... */ }
 
   public void run() {
-    // initialize alternative, for improved time efficiency
     Guard[] guards = { prev0, prev1 };
     Alternative alt = new Alternative(guards);
 
     while (true) {
       switch (alt.priSelect()) {
-
-      // read from first input channel
-      case 0:
+      case 0: // read from first input channel
         value = (Integer) prev0.read();
         // this is the first integer read, i.e., the chunk size
-        if (index0 == -1)
+        if (index0 == -1) // chunk size
           chunk0 = new int[value];
-        else
-          // this is not the first integer read, i.e., it is a piece
-          // of actual data
+        else // actual data
           chunk0[index0] = value;
-
         index0++;
         break;
+\end{lstlisting}
+\end{frame}
 
-      // read from second input channel, idem
-      case 1:
+\begin{frame}[fragile]{Merging Process}
+\begin{lstlisting}[basicstyle=\fontsize{7}{9}\selectfont\ttfamily]
+      case 1: // read from second input channel
         value = (Integer) prev1.read();
-
         if (index1 == -1)
           chunk1 = new int[value];
         else
           chunk1[index1] = value;
-
         index1++;
         break;
       }
-
-      // polling is finished if both chunks exist (first 2 AND operands)
-      // and are filled completely (last 2 operands)
+      // polling is finished if both chunks exist and are filled completely
       if (index0 > -1 && index1 > -1 && index0 == chunk0.length
           && index1 == chunk1.length)
         break;
     }
 
-    // final sorted chunk initialization
     sortedChunk = new int[chunk0.length + chunk1.length];
+    // merge the two sorted chunks ...
 
-    // merge the two sorted chunks
-    int i = 0, j = 0, k = 0;
-
-    while (i < chunk0.length && j < chunk1.length) {
-      if (chunk0[i] < chunk1[j]) {
-        sortedChunk[k] = chunk0[i];
-        i++;
-      } else {
-        sortedChunk[k] = chunk1[j];
-        j++;
-      }
-      k++;
-    }
-
-    if (i == chunk0.length)
-      for (int jj = j; jj < chunk1.length; jj++) {
-        sortedChunk[k] = chunk1[jj];
-        k++;
-      }
-    else
-      for (int ii = i; ii < chunk0.length; ii++) {
-        sortedChunk[k] = chunk0[ii];
-        k++;
-      }
-
-    // write final sorted chunk size on output channel
+    // write sorted chunk on output channel
     next.write(sortedChunk.length);
-
-    // write final sorted chunk data, one by one, into output channel
     for (i = 0; i < sortedChunk.length; i++)
       next.write(new Integer(sortedChunk[i]));
   }

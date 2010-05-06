@@ -208,10 +208,38 @@
   \tableofcontents[current]
 \end{frame}
 
-\begin{frame}{TODO}
+\begin{frame}{JOMP}
   \begin{itemize}
-  \item TODO
+  \item Not natively supported by Java
+  \item JOMP: source to source compiler
+  \item TODO: More information (Wikipedia)
   \end{itemize}
+\end{frame}
+
+\begin{frame}{How to use on the Console}
+  \begin{itemize}
+  \item Download jar file from course page
+  \item Import external JAR file to your project (classpath)
+    \begin{itemize}
+    \item \lstinline!export CLASSPATH=$\$$CLASSPATH:/path/to/jomp1.0b.jar!
+    \item Use option \lstinline!-cp /path/to/jomp1.0b.jar! when
+      calling Java to transform \lstinline!file.jomp! into
+      \lstinline!file.java!
+    \end{itemize}
+  \item Perform the following steps in the console
+    \begin{itemize}
+    \item \lstinline!java jomp.compiler.Jomp file.jomp!
+      \begin{itemize}
+      \item[$\rightarrow$] generates \lstinline!file.java!
+      \end{itemize}
+    \item \lstinline!javac file.java!
+    \item \lstinline!java file!
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{How to use in Eclipse}
+  TODO
 \end{frame}
 
 
@@ -221,10 +249,26 @@
   \tableofcontents[current]
 \end{frame}
 
-\begin{frame}{TODO}
+\begin{frame}{Tasks}
+  Task 1
   \begin{itemize}
-  \item TODO
+  \item Parallelize an existing implementation with OpenMP
+  \item Which loop nest would you parallelize?
+  \item Do you need a critical section?
   \end{itemize}
+
+  \vspace{\stretch{1}}
+
+  Task 2
+  \begin{itemize}
+  \item Implement a Block Matrix Multiplication
+  \item Divide the source matrices into sub-matrices
+  \item Assign a thread to each sub-matrix
+  \end{itemize}
+
+  \vspace{\stretch{1}}
+
+  Which one performs better?
 \end{frame}
 
 

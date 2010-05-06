@@ -92,51 +92,136 @@
 \end{frame}
 
 
-\section{Last Assignment}
+\section{MVC Revisited}
 
 \begin{frame}{Outline}
   \tableofcontents[current]
 \end{frame}
 
-\begin{frame}{Solution}
+\begin{frame}{Model-View-Controller}
+  TODO: Picture
+
+  \vspace{\stretch{1}}
+
+  \begin{description}
+  \item[Direct association:] has-a relationship
+  \item[Indirect association:] Observer pattern
+  \end{description}
+\end{frame}
+
+\begin{frame}{Roles of Participants}
+  \begin{itemize}
+  \item Model:
+    \begin{itemize}
+    \item domain specific knowledge
+    \item adds meaning to raw data
+    \end{itemize}
+  \item View:
+    \begin{itemize}
+    \item render data
+    \item capture user gestures
+    \end{itemize}
+  \item Controller:
+    \begin{itemize}
+    \item respond to events 
+    \item asynchronously invoke changes on model
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\section{Game of Life}
+
+\subsection{Solution 1}
+
+\begin{frame}{Outline}
+  \tableofcontents[current]
+\end{frame}
+
+\begin{frame}{Design of Solution 1}
+  \begin{itemize}
+  \item \lstinline!Application! class:
+    \begin{itemize}
+    \item Main window and controls
+    \item Create and terminate the modeling thread
+    \end{itemize}
+  \item \lstinline!Field! class:
+    \begin{itemize}
+    \item Drawing field: keeps copy of model state
+    \end{itemize}
+  \item \lstinline!Controller! class:
+    \begin{itemize}
+    \item Has data and methods that can be applied on the data
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Code}
+  \begin{center}
+    {\huge Let's take a look at the code}
+  \end{center}
+\end{frame}
+
+\subsection{Solution 2}
+
+\begin{frame}{Outline}
+  \tableofcontents[current]
+\end{frame}
+
+\begin{frame}{Model}
+  \begin{itemize}
+  \item Represents grid of cells, that can be dead or alive
+    \begin{itemize}
+    \item[$\rightarrow$] internally private boolean array
+    \end{itemize}
+  \item Synchronized methods
+  \item Implements computing next state of world
+  \end{itemize}
+
+  TODO: Picture
+\end{frame}
+
+\begin{frame}{View}
+  TODO: Picture
+\end{frame}
+
+\begin{frame}{Controller}
+  TODO: Picture
+\end{frame}
+
+
+\section{OpenMP}
+
+\begin{frame}{Outline}
+  \tableofcontents[current]
+\end{frame}
+
+\begin{frame}{TODO}
   \begin{itemize}
   \item TODO
   \end{itemize}
 \end{frame}
 
 
-\section{Foobar}
+\section{OpenMP in Java}
 
 \begin{frame}{Outline}
   \tableofcontents[current]
 \end{frame}
 
-\begin{frame}{Foobar}
+\begin{frame}{TODO}
   \begin{itemize}
   \item TODO
   \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]{Code}
-  \begin{lstlisting}
-class HelloWorld {
 
-  public static void main(String[] args) {
-    System.out.println("Hello, World!");
-  }
-
-}
-  \end{lstlisting}
-\end{frame}
-
-
-\section{New Assignment}
+\section{Assignment 10}
 
 \begin{frame}{Outline}
   \tableofcontents[current]
 \end{frame}
 
-\begin{frame}{Foobar}
+\begin{frame}{TODO}
   \begin{itemize}
   \item TODO
   \end{itemize}

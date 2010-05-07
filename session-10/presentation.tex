@@ -195,9 +195,173 @@
   \tableofcontents[current]
 \end{frame}
 
-\begin{frame}{TODO}
+\begin{frame}{OpenMP in a Nutshell}
   \begin{itemize}
-  \item TODO
+  \item OpenMP is an API that consists of three parts
+    \begin{itemize}
+    \item Directive-based language extension
+    \item Runtime library routines
+    \item Environment variables
+    \end{itemize}
+  \item Three categories of language extensions
+    \begin{itemize}
+    \item Control structures to express \alert{parallelism}
+    \item Data environment constructs to express \alert{communication}
+    \item Synchronization constructs for \alert{synchronization}
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Parallel Control Structures}
+  Alter flow of control in a program
+
+  \begin{itemize}
+  \item[$\rightarrow$] fork/join model
+  \end{itemize}
+
+  \vspace{\stretch{1}}
+
+  TODO: Picture
+\end{frame}
+
+\begin{frame}{Parallel Control Structures}
+  \begin{itemize}
+  \item Two kinds of parallel constructs
+    \begin{itemize}
+    \item Create multiple threads (parallel directive)
+    \item Divide work between an existing set of threads
+    \end{itemize}
+  \item Parallel directive
+    \begin{itemize}
+    \item Start a parallel region
+    \end{itemize}
+  \item For directive
+    \begin{itemize}
+    \item Exploit data-level parallelism (parallelize loops)
+    \end{itemize}
+  \item Sections directive
+    \begin{itemize}
+    \item Exploit thread-level parallelism (parallelize tasks)
+    \end{itemize}
+  \item Task directive (OpenMP 3.0)
+    \begin{itemize}
+    \item Task with ordering (not possible with sections)
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Communication \& Data Environment}
+  \begin{itemize}
+  \item Master thread (MT) exists the entire execution
+  \item MT encounters a parallel construct
+    \begin{itemize}
+    \item Create a set of worker threads
+    \item Stack is private to each thread
+    \end{itemize}
+  \item Data Scoping
+    \begin{itemize}
+    \item Shared variable: single storage location
+    \item Private variable: multiple storage locations (1 per thread)
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Synchronization}
+  \begin{itemize}
+  \item Co-ordination of execution of multiple threads
+  \item Critical directive: implement mutual exclusion
+    \begin{itemize}
+    \item Exclusive access for a single thread
+    \end{itemize}
+  \item Barrier directive: event synchronization
+    \begin{itemize}
+    \item Signal the occurrence of an event
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Exploiting Loop-Level Parallelism}
+  \begin{itemize}
+  \item Important: program correctness
+  \item Data dependencies:
+    \begin{itemize}
+    \item If two threads read from the same location and at least one
+      thread writes to that location
+      \begin{itemize}
+      \item[$\rightarrow$] Data dependence
+      \end{itemize}
+    \item Example:
+\begin{lstlisting}
+for (i = 1; i < N; i++)
+  a[i] = a[i] + a[i-1];
+\end{lstlisting}
+      \alert{Loop~carried~dependence}
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Examples}
+  \begin{tabular}{l r}
+\begin{lstlisting}
+for (i = 2; i <= n; i+= 2)
+  a[i] = a[i] + a[i-1]
+\end{lstlisting} & \pause\color{green}{No dependence}\pause \\[3em]
+\begin{lstlisting}
+for (i = 1; i <= n/2; i++)
+  a[i] = a[i] + a[i + n/2]
+\end{lstlisting} & \pause\color{green}{No dependence}\pause\\[3em]
+\begin{lstlisting}
+for (i = 1; i <= n/2 + 1; i++)
+  a[i] = a[i] + a[i + n/2]
+\end{lstlisting} & \pause\alert{Dependence:} \\
+    & \alert{\lstinline!read(1+n/2)!} \\
+    & \alert{\lstinline!write(n/2+1)!} \\
+  \end{tabular}
+\end{frame}
+
+\begin{frame}[fragile]{Parallel Directive}
+\begin{lstlisting}
+//omp parallel shared (a,b) private (c,d)
+\end{lstlisting}
+
+  \vspace{\stretch{1}}
+
+  \begin{itemize}
+  \item Starts a parallel region
+  \item \verb!shared!: variable is shared across all threads
+  \item \verb!private!: each thread maintains a private copy
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Distribute Loop Iterations}
+\begin{lstlisting}
+//omp for schedule(dynamic)
+\end{lstlisting}
+
+\begin{lstlisting}
+//omp for schedule(static)
+\end{lstlisting}
+
+  \vspace{\stretch{1}}
+
+  \begin{itemize}
+  \item Distribute loop iterations to worker threads
+  \item \verb!dynamic!: loop-chunks are assigned to threads at runtime
+  \item \verb!static!: loop-chunk assignment before the loop is
+    executed
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Critical Section}
+\begin{lstlisting}
+//omp critical
+\end{lstlisting}
+
+  \vspace{\stretch{1}}
+
+  \begin{itemize}
+  \item Starts a critical section
+  \item Code section is executed by a single thread at a time
   \end{itemize}
 \end{frame}
 

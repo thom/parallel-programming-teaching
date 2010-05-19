@@ -405,38 +405,79 @@ for (i = 1; i <= n/2 + 1; i++)
   \end{itemize}
 \end{frame}
 
-\begin{frame}{How to use in Eclipse: Classpath}
-  Add \lstinline!jomp1.0b.jar! to classpath:
+\begin{frame}{Hot to use in Eclipse}
+  \begin{itemize}
+  \item Add \lstinline!MatrixMultiply.jomp! to your project
+  \item Add a new class \lstinline!MatrixMultiply.java! to your
+    project
+    \begin{itemize}
+    \item[$\rightarrow$] this file will be overwritten by JOMP
+    \end{itemize}
+  \item Copy \lstinline!jomp1.0b.jar! to your project's
+    \lstinline!lib/! directory
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{How to use in Eclipse: File Association}
+  Add a file association for \lstinline!*.jomp! as Java files (for
+  syntax highlighting and auto completion):
 
   \vspace{\stretch{1}}
 
   \begin{center}
-    \includegraphics[width=0.9\textwidth]{figures/jomp-properties}
+    \includegraphics[width=0.9\textwidth]{figures/jomp-file-associations}
   \end{center}
 \end{frame}
 
-\begin{frame}{How to use in Eclipse: External Command}
-  Add new external command:
+\begin{frame}{How to use in Eclipse: Java Build Path}
+  Add \lstinline!jomp1.0b.jar! to your project's build path:
 
   \vspace{\stretch{1}}
 
   \begin{center}
-    \includegraphics[width=0.9\textwidth]{figures/jomp-external-command}
+    \includegraphics[width=0.9\textwidth]{figures/jomp-build-path}
   \end{center}
 \end{frame}
 
-\begin{frame}{How to use in Eclipse: Run External Command}
-  Compile \lstinline!.jomp! file to \lstinline!.java! file:
+\begin{frame}{How to use in Eclipse: New Builder}
+  Add a new builder for JOMP:
 
   \vspace{\stretch{1}}
 
   \begin{center}
-    \includegraphics[scale=0.7]{figures/jomp-run}
+    \includegraphics[width=0.85\textwidth]{figures/jomp-builder1}
   \end{center}
+\end{frame}
+
+\begin{frame}{How to use in Eclipse: Configure Builder}
+  \begin{center}
+    \includegraphics[width=0.8\textwidth]{figures/jomp-builder2}
+  \end{center}
+\end{frame}
+
+\begin{frame}{How to use in Eclipse: Configure Builder}
+  Check ``Refresh resources upon completion'':
 
   \vspace{\stretch{1}}
 
-  Load \lstinline!.java! file and run \lstinline!Main!
+  \begin{center}
+    \includegraphics[width=0.75\textwidth]{figures/jomp-builder3}
+  \end{center}
+\end{frame}
+
+\begin{frame}{How to use in Eclipse: Configure Builder}
+  \begin{itemize}
+  \item Check ``During auto builds''
+  \item Check ``Specify working set of relevant resources''
+  \item Click ``Specify Resources'' and select
+    \lstinline!MatrixMultiply.jomp!
+  \end{itemize}
+
+  \vspace{\stretch{1}}
+
+  \begin{center}
+    \includegraphics[width=0.6\textwidth]{figures/jomp-builder4}
+  \end{center}
 \end{frame}
 
 

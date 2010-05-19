@@ -149,12 +149,6 @@
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Code}
-  \begin{center}
-    {\huge Let's take a look at the code}
-  \end{center}
-\end{frame}
-
 
 \section{OpenMP}
 
@@ -402,17 +396,57 @@ for (i = 1; i <= n/2 + 1; i++)
   \end{itemize}
 \end{frame}
 
-\begin{frame}{How to use in Eclipse}
-  TODO
+\begin{frame}{How to use in Eclipse: Classpath}
+  Add \lstinline!jomp1.0b.jar! to classpath:
+
+  \vspace{\stretch{1}}
+
+  \begin{center}
+    \includegraphics[width=0.9\textwidth]{figures/jomp-properties}
+  \end{center}
+\end{frame}
+
+\begin{frame}{How to use in Eclipse: External Command}
+  Add new external command:
+
+  \vspace{\stretch{1}}
+
+  \begin{center}
+    \includegraphics[width=0.9\textwidth]{figures/jomp-external-command}
+  \end{center}
+\end{frame}
+
+\begin{frame}{How to use in Eclipse: Run External Command}
+  Compile \lstinline!.jomp! file to \lstinline!.java! file:
+
+  \vspace{\stretch{1}}
+
+  \begin{center}
+    \includegraphics[scale=0.7]{figures/jomp-run}
+  \end{center}
+
+  \vspace{\stretch{1}}
+
+  Load \lstinline!.java! file and run \lstinline!Main!
 \end{frame}
 
 
 \section*{Outro}
 
 \begin{frame}{Summary}
-  \begin{itemize}
-  \item TODO
-  \end{itemize}
+  \begin{columns}[c]
+    \begin{column}{0.55\textwidth}
+      \begin{itemize}
+      \item TODO
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+      \begin{center}
+        \includegraphics[scale=0.2]{figures/smbc}\\
+        \tiny{Source: \url{http://www.smbc-comics.com/index.php?db=comics&id=1845}}
+      \end{center}
+    \end{column}
+  \end{columns}
 \end{frame}
 
 \end{document}

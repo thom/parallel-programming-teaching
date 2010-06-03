@@ -180,93 +180,93 @@
   \end{columns}
 \end{frame}
 
-\begin{frame}[fragile]{Informal Proof: Example Exam, Question 2}
-  \begin{itemize}
-  \item Shared variables are volatile, hence inter-thread
-    communication is ensured
-  \item Each thread writes it's own flag
-  \end{itemize}
+% \begin{frame}[fragile]{Informal Proof: Example Exam, Question 2}
+%   \begin{itemize}
+%   \item Shared variables are volatile, hence inter-thread
+%     communication is ensured
+%   \item Each thread writes it's own flag
+%   \end{itemize}
 
-  \vspace{\stretch{1}}
+%   \vspace{\stretch{1}}
 
-  1) Initial Condition:
+%   1) Initial Condition:
 
-  \begin{lstlisting}
-flag0 = false;
-flag1 = false;
-victim = 0;    
-  \end{lstlisting}
-\end{frame}
+%   \begin{lstlisting}
+% flag0 = false;
+% flag1 = false;
+% victim = 0;    
+%   \end{lstlisting}
+% \end{frame}
 
-\begin{frame}[fragile]{Informal Proof: Example Exam, Question 2}
-  2) State before critical section:
+% \begin{frame}[fragile]{Informal Proof: Example Exam, Question 2}
+%   2) State before critical section:
 
-  \begin{lstlisting}
-Thread0: 
-  flag0 = true, victim = 0 || 1, 
-  no write to flag1; (line 12)
+%   \begin{lstlisting}
+% Thread0: 
+%   flag0 = true, victim = 0 || 1, 
+%   no write to flag1; (line 12)
 
-Thread1: 
-  flag1 = true, victim = 0 || 1, 
-  no write to flag0; (line 27)
-  \end{lstlisting}
-\end{frame}
+% Thread1: 
+%   flag1 = true, victim = 0 || 1, 
+%   no write to flag0; (line 27)
+%   \end{lstlisting}
+% \end{frame}
 
-\begin{frame}[fragile]{Informal Proof: Example Exam, Question 2}
-  3) Invariants:
+% \begin{frame}[fragile]{Informal Proof: Example Exam, Question 2}
+%   3) Invariants:
 
-  \begin{lstlisting}
-3a) Thread 0: 
-      flag1 = false || victim = 1; 
-      (line 12 -> line 13)
+%   \begin{lstlisting}
+% 3a) Thread 0: 
+%       flag1 = false || victim = 1; 
+%       (line 12 -> line 13)
 
-3b) Thread 1: 
-      flag0 = false || victim = 0; 
-      (line 27 -> line 28)
+% 3b) Thread 1: 
+%       flag0 = false || victim = 0; 
+%       (line 27 -> line 28)
 
-3c) Thread 0 and Thread 1 at line 13 
-    and line 28 at the same time
-  \end{lstlisting}
+% 3c) Thread 0 and Thread 1 at line 13 
+%     and line 28 at the same time
+%   \end{lstlisting}
 
-  To enter the critial section, thead 0 must transition from line 12
-  to line 13, thread 1 must transition from line 27 to 28. So we only
-  need to consider the case when both threads are in the while and
-  therefore \lstinline!flag0! and \lstinline!flag1! are true.
-\end{frame}
+%   To enter the critial section, thead 0 must transition from line 12
+%   to line 13, thread 1 must transition from line 27 to 28. So we only
+%   need to consider the case when both threads are in the while and
+%   therefore \lstinline!flag0! and \lstinline!flag1! are true.
+% \end{frame}
 
-\begin{frame}[fragile]{Informal Proof: Example Exam, Question 2}
-  4) Proof: Thread 0 in CS, thread 1 wants to enter
+% \begin{frame}[fragile]{Informal Proof: Example Exam, Question 2}
+%   4) Proof: Thread 0 in CS, thread 1 wants to enter
 
-  \begin{lstlisting}
-flag0 = true (line 10); 
-flag1 = true;
-victim = 1 (line 26);
+%   \begin{lstlisting}
+% flag0 = true (line 10); 
+% flag1 = true;
+% victim = 1 (line 26);
 
-=> 3b) does not evaluate to true
-  \end{lstlisting}
+% => 3b) does not evaluate to true
+%   \end{lstlisting}
 
-  \vspace{\stretch{1}}
+%   \vspace{\stretch{1}}
 
-  5) Proof: Thread 1 in CS, thread 0 wants to enter
+%   5) Proof: Thread 1 in CS, thread 0 wants to enter
 
-  \begin{lstlisting}
-flag0 = true (line 25); 
-flag1 = true;
-victim = 0 (line 11);
+%   \begin{lstlisting}
+% flag0 = true (line 25); 
+% flag1 = true;
+% victim = 0 (line 11);
 
-=> 3a) does not evaluate to true
-  \end{lstlisting}
-\end{frame}
+% => 3a) does not evaluate to true
+%   \end{lstlisting}
+% \end{frame}
 
-\begin{frame}{Informal Proof: Example Exam, Question 2}
-  6) Proof: Not both threads in critical section together \\[2ex]
+% \begin{frame}{Informal Proof: Example Exam, Question 2}
+%   6) Proof: Not both threads in critical section together \\[2ex]
 
-  If thread 0 and thread 1 were in the CS at the same time, the
-  conditions in 4) and 5) would require that \lstinline!victim! is 0
-  and 1 at the same time\\[3ex]
+%   If thread 0 and thread 1 were in the CS at the same time, the
+%   conditions in 4) and 5) would require that \lstinline!victim! is 0
+%   and 1 at the same time\\[3ex]
 
-  $\rightarrow$ Contradiction
-\end{frame}
+%   $\rightarrow$ Contradiction
+% \end{frame}
 
 
 \section{Possible Executions}
